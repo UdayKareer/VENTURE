@@ -4,7 +4,8 @@ import DoctorSidebar, { type DoctorNavTab } from './DoctorSidebar';
 import {
   Menu,
   X,
-  Zap
+  Zap,
+  QrCode
 } from 'lucide-react';
 import { mockDatabase, usePatientStore } from '../store/usePatientStore';
 
@@ -108,6 +109,13 @@ export default function DoctorLayout() {
             )}
 
             <div className="flex items-center gap-2">
+              <button
+                onClick={() => navigate('/presentation')}
+                className="hidden md:flex items-center gap-1.5 px-3 py-1 bg-teal-800 hover:bg-teal-900 text-white rounded-full text-xs font-bold transition-all shadow-2xs cursor-pointer"
+              >
+                <QrCode size={13} />
+                <span>Judge QRs</span>
+              </button>
               <div className="flex items-center gap-1.5 text-[11px] font-semibold text-teal-700 bg-teal-50 px-2.5 py-1 rounded-full border border-teal-200/60">
                 <span className="w-1.5 h-1.5 rounded-full bg-teal-500" />
                 <span>EHR Cloud Synced</span>

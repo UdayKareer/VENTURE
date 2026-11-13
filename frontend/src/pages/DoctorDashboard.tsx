@@ -128,16 +128,14 @@ export default function DoctorDashboard() {
   const queueTrigger = usePatientStore((state) => state.queueTrigger);
 
   // Search token input
-  const [searchToken, setSearchToken] = useState(currentPatient.token || 'EMG-911');
+  const [searchToken, setSearchToken] = useState('OPD-101');
   const [inspectingRelievedToken, setInspectingRelievedToken] = useState<string | null>(null);
   const [selectedPatient, setSelectedPatient] = useState<PatientData>(() => {
-    const active = Object.values(mockDatabase).find(
-      (p) => p.status !== 'accepted' && p.status !== 'admitted'
-    );
     return (
-      active ||
-      mockDatabase[currentPatient.token] ||
-      mockDatabase['EMG-911'] ||
+      mockDatabase['OPD-101'] ||
+      Object.values(mockDatabase).find(
+        (p) => p.status !== 'accepted' && p.status !== 'admitted'
+      ) ||
       Object.values(mockDatabase)[0]
     );
   });
@@ -396,7 +394,7 @@ export default function DoctorDashboard() {
   };
 
   const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
-  const [queueFilter, setQueueFilter] = useState<'all' | 'emergency' | 'waiting' | 'relieved'>('all');
+  const [queueFilter, setQueueFilter] = useState<'all' | 'normal' | 'emergency' | 'waiting' | 'relieved'>('all');
   const [sortBy, setSortBy] = useState<'longest_wait' | 'newest' | 'acuity'>('longest_wait');
   const [viewingDoc, setViewingDoc] = useState<UploadedDocument | null>(null);
 
@@ -943,6 +941,7 @@ export default function DoctorDashboard() {
 
   const filteredQueue = useMemo(() => {
     return allQueuePatients.filter((p) => {
+      if (queueFilter === 'normal') return p.triageLevel === 'normal' && p.status !== 'accepted';
       if (queueFilter === 'emergency') return p.triageLevel === 'emergency' && p.status !== 'accepted';
       if (queueFilter === 'waiting') return p.status === 'waiting';
       if (queueFilter === 'relieved') return p.status === 'accepted';
@@ -1078,13 +1077,15 @@ export default function DoctorDashboard() {
       {/* OPD KPI Ticker Bar */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="bg-white p-3.5 rounded-2xl border border-slate-200/90 shadow-2xs">
-          <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">In Waiting Hall</div>
-          <div className="text-xl font-black text-blue-600 mt-0.5">{allQueuePatients.filter(p => p.status === 'waiting').length} <span className="text-[11px] font-normal text-slate-400">Waiting</span></div>
+          <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Routine OPD (Normal)</div>
+          <div className="text-xl font-black text-emerald-600 mt-0.5">
+            {activeQueuePatients.filter(p => p.triageLevel === 'normal').length} <span className="text-[11px] font-normal text-slate-400">Stable</span>
+          </div>
         </div>
 
         <div className="bg-white p-3.5 rounded-2xl border border-slate-200/90 shadow-2xs">
           <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1">
-            <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" /> Critical Red-Flags
+            <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" /> 108 Trauma / Critical
           </div>
           <div className="text-xl font-black text-red-600 mt-0.5">
             {activeQueuePatients.filter(p => p.triageLevel === 'emergency').length} <span className="text-[11px] font-normal text-slate-400">High Risk</span>
@@ -1098,7 +1099,7 @@ export default function DoctorDashboard() {
 
         <div className="bg-white p-3.5 rounded-2xl border border-slate-200/90 shadow-2xs">
           <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">OPD Done / Relieved</div>
-          <div className="text-xl font-black text-emerald-600 mt-0.5">{relievedPatients.length} <span className="text-[11px] font-normal text-slate-400">Relieved</span></div>
+          <div className="text-xl font-black text-teal-600 mt-0.5">{relievedPatients.length} <span className="text-[11px] font-normal text-slate-400">Relieved</span></div>
         </div>
       </div>
 
@@ -1135,6 +1136,14 @@ export default function DoctorDashboard() {
                   }`}
                 >
                   Active Queue ({activeQueuePatients.length})
+                </button>
+                <button
+                  onClick={() => setQueueFilter('normal')}
+                  className={`px-3 py-1.5 rounded-lg transition-all ${
+                    queueFilter === 'normal' ? 'bg-emerald-700 text-white shadow-2xs' : 'text-emerald-700'
+                  }`}
+                >
+                  Normal OPD ({activeQueuePatients.filter(p => p.triageLevel === 'normal').length})
                 </button>
                 <button
                   onClick={() => setQueueFilter('emergency')}
@@ -1243,7 +1252,7 @@ export default function DoctorDashboard() {
                             : 'bg-emerald-100 text-emerald-800'
                         }`}>
                           {p.triageLevel === 'emergency' && <Zap size={10} />}
-                          {p.triageLevel}
+                          {p.triageLevel === 'normal' ? 'Routine OPD (Normal)' : p.triageLevel}
                         </span>
                         {p.esiTriage && (
                           <span className={`text-[9px] font-black px-1.5 py-0.5 rounded border w-fit ${p.esiTriage.badgeBg} ${p.esiTriage.badgeText} ${p.esiTriage.badgeBorder}`}>
@@ -1256,7 +1265,7 @@ export default function DoctorDashboard() {
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                         p.triageLevel === 'emergency' ? 'bg-red-50 text-red-700 border border-red-200 font-mono' : 'bg-teal-50 text-teal-700 border border-teal-200'
                       }`}>
-                        {p.triageLevel === 'emergency' ? '🚨 108 Trauma' : 'Hospital OPD'}
+                        {p.triageLevel === 'emergency' ? '🚨 108 Trauma' : 'Hospital OPD Entry'}
                       </span>
                     </td>
                     <td className="p-4">
@@ -1843,6 +1852,11 @@ export default function DoctorDashboard() {
                             {p.triageLevel === 'emergency' && !p.esiTriage && (
                               <span className="text-[9px] font-bold text-red-600 bg-red-100 px-1.5 py-0.5 rounded-full animate-pulse">
                                 108 TRAUMA
+                              </span>
+                            )}
+                            {p.triageLevel === 'normal' && (
+                              <span className="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-full border border-emerald-200">
+                                OPD ROUTINE
                               </span>
                             )}
                           </div>

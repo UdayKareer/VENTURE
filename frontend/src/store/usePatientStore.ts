@@ -355,246 +355,400 @@ const createInitialPatient = (): PatientData => ({
   queuePosition: 0,
 });
 
-// Seed Initial Mock Database with Realistic Cases
+// Seed Initial Mock Database with Realistic Clinical Distribution (Routine OPD, Priority, Emergency)
 export const mockDatabase: Record<string, PatientData> = {
-  'EMG-911': {
-    patientId: 'EMG-911',
-    token: 'EMG-911',
-    abhaId: '88-3921-9941-0021',
+  'OPD-101': {
+    patientId: 'OPD-101',
+    token: 'OPD-101',
+    abhaId: '14-8821-3094-1102',
     abhaVerified: true,
-    name: 'Ramesh Kumar Sharma',
-    age: '58',
-    gender: 'Male',
-    phone: '9811223344',
-    height: '168',
-    weight: '76',
-    language: 'hi',
+    name: 'Priya Sen',
+    age: '42',
+    gender: 'Female',
+    phone: '9876543210',
+    height: '162',
+    weight: '64',
+    language: 'en',
     mode: 'modern',
-    chiefComplaint: 'Acute retrosternal chest pain with diaphoresis and breathlessness',
-    chiefComplaintHi: 'सीने में तेज दबाव, पसीना और सांस लेने में कठिनाई',
-    symptomDuration: 'Started 45 minutes ago',
-    symptomSite: 'Center of chest radiating to left arm and jaw',
-    symptomCharacter: 'Crushing elephant-on-chest pressure',
-    symptomRadiation: 'Left shoulder, inner arm, lower jaw',
-    symptomTiming: 'Constant unremitting crushing pressure since 45 minutes',
-    symptomSeverity: 9,
-    aggravatingFactors: 'Any slight movement or exertion',
-    relievingFactors: 'None, persisting at complete rest',
-    associatedSymptoms: ['Profuse cold sweating', 'Shortness of breath', 'Nausea / Lightheadedness'],
+    chiefComplaint: 'Routine 3-Month Follow-Up for Type 2 Diabetes & Routine Lab Review',
+    chiefComplaintHi: 'मधुमेह की नियमित 3 महीने की जांच और दवा पर्ची नवीनीकरण',
+    symptomDuration: 'Asymptomatic (Routine 3-month cycle)',
+    symptomSite: 'Systemic metabolic follow-up',
+    symptomCharacter: 'Stable, asymptomatic, good glycemic control',
+    symptomRadiation: 'None',
+    symptomTiming: 'Routine quarterly review',
+    symptomSeverity: 2,
+    aggravatingFactors: 'None reported',
+    relievingFactors: 'Consistent dietary adherence and morning walking',
+    associatedSymptoms: ['Mild occasional fatigue after long office hours'],
     prakriti: '',
     agni: '',
     koshtha: '',
-    aharaVihara: '',
-    nidra: '',
+    aharaVihara: 'Balanced home-cooked diet, low glycemic index meals, 45 min daily walk',
+    nidra: 'Sound sleep 7 hours nightly',
+    dashavidha: {
+      prakriti: 'Normal Balanced Stature',
+      vikriti: 'None evident (Euglycemic)',
+      sara: 'Good physical reserve',
+      samhanana: 'Normal compact frame',
+      pramana: 'BMI: 24.2 (Normal)',
+      satmya: 'Good adaptation to balanced diet',
+      sattva: 'High resilience',
+      aharaShakti: 'Normal digestion (Samagni)',
+      vyayamaShakti: 'Good exercise tolerance',
+      vaya: 'Adult phase (42 Yrs)'
+    },
+    ashtaSthana: {
+      nadi: 'Regular (72 bpm, normotensive wave)',
+      mutra: 'Normal clear, no polyuria',
+      mala: 'Regular bowel habits',
+      jihwa: 'Clean, no furring',
+      shabda: 'Clear and fluent',
+      sparsha: 'Warm and normal',
+      druk: 'Clear, fundoscopy normal last year',
+      akruti: 'Healthy, composed facies'
+    },
     chronicConditions: [
-      { condition: 'Type 2 Diabetes Mellitus', duration: '8 years', medication: 'Tab Metformin 1000mg BD', status: 'Sub-optimally controlled' },
-      { condition: 'Essential Hypertension', duration: '5 years', medication: 'Tab Telmisartan 40mg OD', status: 'Poor compliance' }
+      { condition: 'Type 2 Diabetes Mellitus', duration: '4 years', medication: 'Tab Metformin 500mg BD', status: 'Well-controlled (HbA1c 6.8%)', isDoctorVerified: true }
     ],
-    allergies: [
-      { allergen: 'Penicillin', reaction: 'Anaphylaxis / Urticaria', severity: 'severe' }
-    ],
-    reviewOfSystems: ['Dyspnea on mild exertion', 'Occasional orthopnea', 'Bilateral pedal edema'],
-    triageLevel: 'emergency',
-    redFlags: [
-      'CRITICAL: Acute crushing retrosternal chest pain radiating to left arm',
-      'CRITICAL: Associated diaphoresis (cold sweats) and acute dyspnea',
-      'HIGH RISK: Diaphoretic presentation with known DM-2 and HTN background'
-    ],
+    allergies: [],
+    reviewOfSystems: ['No polyuria or polydipsia', 'No paresthesias or foot numbness', 'No chest discomfort or exertional dyspnea'],
+    triageLevel: 'normal',
+    redFlags: [],
+    adaptiveAnswers: {},
     esiTriage: {
-      level: 1,
-      category: 'Resuscitation',
-      color: '#ef4444',
-      badgeBg: 'bg-red-500/10',
-      badgeText: 'text-red-700',
-      badgeBorder: 'border-red-500/30',
-      rationale: 'Acute crushing retrosternal chest pain with left arm/jaw radiation, severe diaphoresis and dyspnea in a known diabetic. High probability of STEMI.',
+      level: 5,
+      category: 'Non-Urgent',
+      color: '#10b981',
+      badgeBg: 'bg-emerald-500/10',
+      badgeText: 'text-emerald-700',
+      badgeBorder: 'border-emerald-500/30',
+      rationale: 'Asymptomatic quarterly follow-up with stable glycemic control and normal home monitoring. Zero emergency indicators.',
       immediateActions: [
-        'Immediate transfer to Emergency Resuscitation Bay',
-        'Stat 12-lead ECG within 10 minutes',
-        'High-sensitivity Troponin-I/T',
-        'Aspirin 300mg + Clopidogrel 300mg stat loading',
-        'Continuous cardiac telemetry & IV access'
+        'Routine physician physical examination',
+        'Review recent fasting blood glucose (112 mg/dL)',
+        'Renew 90-day maintenance prescription for Metformin 500mg'
       ],
-      predictedResources: ['12-Lead ECG', 'Serial Cardiac Troponins', 'IV Cannulation', 'Continuous Telemetry', 'Chest Radiograph'],
-      algorithmSource: 'gemini-3.5-flash-lite'
+      predictedResources: ['Physician Consultation', 'Prescription Renewal'],
+      algorithmSource: 'clinical-rule-engine'
     },
     uploadedDocuments: [
       {
-        id: 'doc-1',
-        name: 'MaxLab_Lipid_HbA1c_July2024.pdf',
+        id: 'doc-sen-1',
+        name: 'Metropolis_FastingGlucose_HbA1c.pdf',
         type: 'Lab Report',
-        date: '14 Jul 2024',
-        timestamp: new Date('2024-07-14T09:30:00').getTime(),
+        date: '10 Nov 2026',
+        timestamp: Date.now() - 86400000 * 3,
         uploadedBy: 'patient',
         isHandwritten: false,
         ocrStatus: 'complete',
-        extractedDiagnoses: ['Hyperlipidemia', 'Poorly controlled Glycemia'],
+        extractedDiagnoses: ['Well-controlled Glycemia'],
         extractedMeds: [],
         extractedLabs: [
-          { test: 'HbA1c', value: '9.4', unit: '%', range: '4.0 - 5.6', isOutOfRange: true },
-          { test: 'Total Cholesterol', value: '248', unit: 'mg/dL', range: '< 200', isOutOfRange: true },
-          { test: 'Serum Creatinine', value: '1.4', unit: 'mg/dL', range: '0.7 - 1.2', isOutOfRange: true }
+          { test: 'Fasting Blood Glucose', value: '112', unit: 'mg/dL', range: '70 - 100', isOutOfRange: true },
+          { test: 'HbA1c', value: '6.8', unit: '%', range: '4.0 - 5.6', isOutOfRange: true },
+          { test: 'Serum Creatinine', value: '0.9', unit: 'mg/dL', range: '0.6 - 1.1', isOutOfRange: false }
         ],
-        notes: 'Digitally printed diagnostic panel from MaxLab Diagnostics. Extracted automatically with high optical confidence.'
+        notes: 'Printed automated biochemical report from Metropolis Healthcare.'
       }
     ],
     consentHistory: true,
     consentDocuments: true,
     consentAyush: false,
     structuredSummary: {
-      chiefComplaintSummary: '58-year-old male presenting with acute 45-minute history of severe retrosternal crushing pain.',
-      hpi: 'Patient describes acute onset of retrosternal heaviness radiating to left shoulder and jaw, rated 9/10, accompanied by cold diaphoresis, dyspnea and nausea. Pain is unremitting at rest. Cardiovascular risk profile includes 8-year T2DM and 5-year HTN with prior documented dyslipidemia.',
-      pastHistory: 'T2DM (8 yrs), Essential HTN (5 yrs). High cardiovascular risk profile.',
-      medicationsSummary: 'Metformin 1000mg BD, Telmisartan 40mg OD (erratic compliance).',
-      allergiesSummary: 'ALLERGY WARNING: Severe Penicillin allergy (anaphylactoid reaction).',
-      rosSummary: 'Positive for acute diaphoresis, dyspnea, nausea. Negative for hemoptysis, fever.',
-      redFlagsSummary: [
-        'Acute Coronary Syndrome (STEMI / NSTEMI) suspected',
-        'Immediate 12-lead ECG and Troponin-I protocol required',
-        'Direct bypass to Emergency Resuscitation Bay'
+      chiefComplaintSummary: '42-year-old female with well-controlled Type 2 Diabetes presenting for routine 3-month outpatient review and prescription refill.',
+      hpi: 'Patient reports feeling well with zero episodes of hypoglycemia, nocturia, or polyuria. Regular morning walks and home glucose logs average 110-125 mg/dL.',
+      pastHistory: 'Type 2 Diabetes diagnosed 4 years ago. No diabetic retinopathy or microalbuminuria.',
+      medicationsSummary: 'Metformin 500mg BD post meals.',
+      allergiesSummary: 'No known drug or environmental allergies.',
+      rosSummary: 'Zero cardiovascular, neurological, or renal complaints.',
+      redFlagsSummary: [],
+      documentHighlights: ['Recent HbA1c 6.8% (Target < 7.0% achieved)', 'Serum creatinine normal at 0.9 mg/dL'],
+      suggestedWorkup: ['Annual lipid panel in 6 months', 'Continue current oral antidiabetic regimen']
+    },
+    doctorNotes: '',
+    status: 'waiting',
+    createdAt: '09:00 AM'
+  },
+  'OPD-102': {
+    patientId: 'OPD-102',
+    token: 'OPD-102',
+    abhaId: '32-1094-5582-9901',
+    abhaVerified: true,
+    name: 'Rohan Gupta',
+    age: '28',
+    gender: 'Male',
+    phone: '9812345678',
+    height: '178',
+    weight: '72',
+    language: 'en',
+    mode: 'modern',
+    chiefComplaint: 'Mild Seasonal Throat Irritation and Dry Cough for 2 Days',
+    chiefComplaintHi: '2 दिनों से गले में हल्की खराश और सूखी खांसी',
+    symptomDuration: '2 days',
+    symptomSite: 'Pharynx and upper trachea',
+    symptomCharacter: 'Scratchy throat irritation, non-productive cough',
+    symptomRadiation: 'None',
+    symptomTiming: 'Worse early morning and with cold beverages',
+    symptomSeverity: 3,
+    aggravatingFactors: 'Cold liquids, air conditioning',
+    relievingFactors: 'Warm tea, warm water sips',
+    associatedSymptoms: ['Mild nasal congestion', 'No fever', 'No shortness of breath'],
+    prakriti: '',
+    agni: '',
+    koshtha: '',
+    aharaVihara: 'Routine office routine, adequate fluid intake',
+    nidra: 'Normal 7 hours',
+    dashavidha: {
+      prakriti: 'Normal Healthy Young Adult',
+      vikriti: 'Mild upper airway irritation',
+      sara: 'Excellent reserve',
+      samhanana: 'Athletic lean build',
+      pramana: 'Normal BMI (22.7)',
+      satmya: 'Good adaptation',
+      sattva: 'High resilience',
+      aharaShakti: 'Normal digestion',
+      vyayamaShakti: 'Regular gym workouts',
+      vaya: 'Young adult (28 Yrs)'
+    },
+    ashtaSthana: {
+      nadi: 'Regular (74 bpm, regular rhythm)',
+      mutra: 'Normal hydration',
+      mala: 'Regular',
+      jihwa: 'Clean, mild posterior pharyngeal erythema',
+      shabda: 'Normal phonation, no hoarseness',
+      sparsha: 'Afebrile (98.4°F)',
+      druk: 'Clear sclera',
+      akruti: 'Comfortable, non-toxic'
+    },
+    chronicConditions: [],
+    allergies: [],
+    reviewOfSystems: ['Afebrile, Temp 98.4°F', 'SpO2 99% on ambient room air', 'No stridor or wheeze on auscultation'],
+    triageLevel: 'normal',
+    redFlags: [],
+    adaptiveAnswers: {},
+    esiTriage: {
+      level: 5,
+      category: 'Non-Urgent',
+      color: '#10b981',
+      badgeBg: 'bg-emerald-500/10',
+      badgeText: 'text-emerald-700',
+      badgeBorder: 'border-emerald-500/30',
+      rationale: 'Mild upper respiratory mucosal irritation without fever, stridor, or respiratory distress. Hemodynamically stable.',
+      immediateActions: [
+        'Oropharyngeal inspection (mild erythema, no tonsillar exudates)',
+        'Advise warm saline gargles & adequate oral hydration',
+        'Prescribe symptomatic antitussive / lozenges if cough disrupts work'
       ],
-      documentHighlights: [
-        'HbA1c 9.4% (Severely Elevated)',
-        'Cholesterol 248 mg/dL (Elevated)',
-        'Borderline elevated Serum Creatinine (1.4 mg/dL)'
-      ],
-      suggestedWorkup: [
-        'Stat 12-Lead ECG within 10 minutes',
-        'High-sensitivity Cardiac Troponin I/T',
-        'Aspirin 300mg + Clopidogrel 300mg loading if ECG positive & no contraindications',
-        'Continuous cardiac monitoring & IV access'
-      ]
+      predictedResources: ['Outpatient Examination', 'Symptomatic Relief'],
+      algorithmSource: 'clinical-rule-engine'
+    },
+    uploadedDocuments: [],
+    consentHistory: true,
+    consentDocuments: true,
+    consentAyush: false,
+    structuredSummary: {
+      chiefComplaintSummary: '28-year-old male presenting with 2 days of mild pharyngeal scratchiness and dry cough following AC exposure.',
+      hpi: 'Patient developed mild throat irritation 48 hours ago. No fever, chills, hemoptysis, or dyspnea. Vital signs completely normal.',
+      pastHistory: 'No prior medical or surgical history.',
+      medicationsSummary: 'None.',
+      allergiesSummary: 'No known drug allergies.',
+      rosSummary: 'Vital signs stable: BP 118/76, HR 74, SpO2 99%.',
+      redFlagsSummary: [],
+      documentHighlights: [],
+      suggestedWorkup: ['Conservative symptomatic management', 'Warm saline gargles']
     },
     doctorNotes: '',
     status: 'waiting',
     createdAt: '09:15 AM'
   },
-  'AYU-402': {
-    patientId: 'AYU-402',
-    token: 'AYU-402',
-    abhaId: '45-2019-3382-7711',
+  'OPD-103': {
+    patientId: 'OPD-103',
+    token: 'OPD-103',
+    abhaId: '55-4920-1123-4488',
     abhaVerified: true,
-    name: 'Sunita Devi Verma',
-    age: '44',
+    name: 'Meenakshi Sundaram',
+    age: '61',
     gender: 'Female',
-    phone: '9844332211',
-    height: '158',
-    weight: '62',
-    language: 'hi',
-    mode: 'ayush',
-    chiefComplaint: 'Chronic Amlapitta (Acid peptic distress), bloating and Sandhivata (knee stiffness)',
-    chiefComplaintHi: 'पेट में जलन, खट्टी डकारें, गैस और घुटनों में जकड़न',
-    symptomDuration: '3 months, worsening over last 2 weeks',
-    symptomSite: 'Epigastrium and bilateral knee joints',
-    symptomCharacter: 'Vidaha (burning), Gaurava (heaviness), Sandhishoola',
-    symptomRadiation: 'Retro-sternal burning upward radiation',
-    symptomTiming: 'Epigastric burning worse 1-2 hours post meals; knee stiffness worse in mornings on rising',
-    symptomSeverity: 6,
-    aggravatingFactors: 'Pungent, oily foods (Katu/Amla Ahara), mental stress, fasting',
-    relievingFactors: 'Cold milk, light bland diet (Laghu Ahara)',
-    associatedSymptoms: ['Sour belching (Amlodgara)', 'Early morning joint stiffness', 'Lethargy (Alasya)'],
-    prakriti: 'Pitta-Vata',
-    agni: 'Tikshnagni with Vishamata (erratic burning appetite)',
-    koshtha: 'Krura Koshtha (Vibandha / constipation tendency)',
-    aharaVihara: 'Irregular breakfast, excessive tea consumption (5-6 cups/day), late dinners',
-    nidra: 'Alpa Nidra (fragmented sleep < 6 hrs)',
+    phone: '9744221100',
+    height: '155',
+    weight: '68',
+    language: 'en',
+    mode: 'modern',
+    chiefComplaint: 'Bilateral Knee Joint Stiffness after Prolonged Sitting & Exercise Guidance',
+    chiefComplaintHi: 'बैठने के बाद दोनों घुटनों में अकड़न और दर्द, व्यायाम सलाह',
+    symptomDuration: '6 months gradual onset',
+    symptomSite: 'Bilateral knee joints (medial compartment)',
+    symptomCharacter: 'Dull ache and stiffness lasting 10-15 minutes after rising',
+    symptomRadiation: 'None',
+    symptomTiming: 'Worst on waking and after prolonged chair sitting',
+    symptomSeverity: 3,
+    aggravatingFactors: 'Stairs climbing, squatting',
+    relievingFactors: 'Gentle walking, warm compression',
+    associatedSymptoms: ['Mild joint crepitus', 'No joint effusion', 'No redness or warmth'],
+    prakriti: '',
+    agni: '',
+    koshtha: '',
+    aharaVihara: 'Vegetarian diet, sedentary lifestyle, limited walking',
+    nidra: '6 hours nightly',
     dashavidha: {
-      prakriti: 'Pitta-Vata Combination (Lean to medium build, sensitive to heat)',
-      vikriti: 'Pitta Imbalance (Hyperacidity, burning sensation, vidaha)',
-      sara: 'Moderate Reserve (Madhyama Sara - average stamina)',
-      samhanana: 'Average Build (Madhyama - balanced skeletal tone)',
-      pramana: 'Proportionate & Symmetrical (Normal BMI: 22.8)',
-      satmya: 'Moderate Adaptability (Sensitive to pungent spices, tea & heat)',
-      sattva: 'Moderate Resilience (Madhyama Sattva - works under stress)',
-      aharaShakti: 'Tikshnagni (Hypermetabolic, intense hunger, acidity)',
-      vyayamaShakti: 'Moderate Endurance (Handles routine work, tires with knee strain)',
-      vaya: 'Madhyama Phase (42 Yrs - active productive adult phase)'
+      prakriti: 'Mature Adult Stature',
+      vikriti: 'Mild degenerative osteoarticular change',
+      sara: 'Moderate reserve',
+      samhanana: 'Moderate bone frame',
+      pramana: 'BMI: 28.3 (Overweight)',
+      satmya: 'Moderate',
+      sattva: 'Cooperative',
+      aharaShakti: 'Normal digestion',
+      vyayamaShakti: 'Reduced due to knee stiffness',
+      vaya: 'Elder adult (61 Yrs)'
     },
     ashtaSthana: {
-      nadi: 'Rapid & Bounding (Manduka/Pitta gati, 78 bpm, warm bounding pulse)',
-      mutra: 'Dark Yellow / Burning (Pitta - concentrated, mild dysuria)',
-      mala: 'Constipated & Hard (Krura - dry, straining required)',
-      jihwa: 'Red Margins with Mild White Coating (Pitta-Sama)',
-      shabda: 'Clear & Resonant (Spashta - normal phonation)',
-      sparsha: 'Warm & Mildly Dry (Ushna-Ruksha - warm palms, dry skin)',
-      druk: 'Clear with Mild Vascular Injection (Rakta/Pitta on strain)',
-      akruti: 'Mild Pain Facies (Kastam - furrowed brow during gastric flare)'
+      nadi: 'Regular (70 bpm, calm)',
+      mutra: 'Normal',
+      mala: 'Normal',
+      jihwa: 'Clean',
+      shabda: 'Clear',
+      sparsha: 'Knees cool, no joint effusion',
+      druk: 'Normal',
+      akruti: 'Ambulant without cane'
     },
     chronicConditions: [
-      { condition: 'Amlapitta / Dyspepsia', duration: '2 years', medication: 'Occasional Pantoprazole 40mg', status: 'Recurrent' },
-      { condition: 'Bilateral Knee Osteoarthritis (Early)', duration: '1 year', medication: 'Calcium + Vit D3', status: 'Mild functional limitation' }
+      { condition: 'Primary Bilateral Knee Osteoarthritis (Grade 1-2)', duration: '1 year', medication: 'Calcium 500mg + Vitamin D3 OD', status: 'Stable', isDoctorVerified: true }
     ],
-    allergies: [
-      { allergen: 'Sulfa Drugs', reaction: 'Skin rashes', severity: 'moderate' }
-    ],
-    reviewOfSystems: ['No hematemesis, no melena', 'Morning stiffness < 30 mins', 'No inflammatory joint swelling'],
+    allergies: [],
+    reviewOfSystems: ['No hot swollen joints', 'Morning stiffness < 20 mins (non-inflammatory)', 'Normal gait on flat floor'],
     triageLevel: 'normal',
     redFlags: [],
+    adaptiveAnswers: {},
     esiTriage: {
       level: 4,
-      category: 'Less Urgent',
+      category: 'Non-Urgent',
       color: '#10b981',
       badgeBg: 'bg-emerald-500/10',
       badgeText: 'text-emerald-700',
       badgeBorder: 'border-emerald-500/30',
-      rationale: 'Subacute chronic dyspeptic discomfort and early knee joint stiffness. Normal vital signs, no red flags. Requires single therapeutic resource.',
+      rationale: 'Mild degenerative osteoarthritis symptoms with normal joint alignment and preserved mobility. No hot swelling or effusion.',
       immediateActions: [
-        'Outpatient integrative consultation',
-        'Dietary counseling (Pitta-pacifying diet)',
-        'Targeted oral herbal / allopathic regimen'
+        'Range of motion examination of bilateral knee joints',
+        'Demonstrate quadriceps isometric strengthening exercises',
+        'Prescribe topical NSAID gel for flare-ups'
       ],
-      predictedResources: ['Outpatient Prescription', 'Dietary & Lifestyle Counseling'],
-      algorithmSource: 'gemini-3.5-flash-lite'
+      predictedResources: ['Orthopedic Exam', 'Physiotherapy Referral'],
+      algorithmSource: 'clinical-rule-engine'
     },
-    uploadedDocuments: [
-      {
-        id: 'doc-2',
-        name: 'Prescription_CivilHospital_April.jpg',
-        type: 'Prescription',
-        date: '22 Apr 2024',
-        timestamp: new Date('2024-04-22T11:15:00').getTime(),
-        uploadedBy: 'patient',
-        isHandwritten: true,
-        ocrStatus: 'bypassed_to_doctor',
-        extractedDiagnoses: ['Acid Peptic Disease', 'Early Bilateral Knee OA'],
-        extractedMeds: [
-          { name: 'Pantoprazole 40mg', dose: '1 tab', frequency: 'Before breakfast' },
-          { name: 'Paracetamol 650mg', dose: '1 tab', frequency: 'SOS for knee ache' }
-        ],
-        extractedLabs: [
-          { test: 'Serum Uric Acid', value: '5.2', unit: 'mg/dL', range: '2.5 - 6.5', isOutOfRange: false },
-          { test: 'ESR', value: '24', unit: 'mm/hr', range: '0 - 20', isOutOfRange: true }
-        ],
-        notes: 'Handwritten OPD prescription slip from Civil Hospital. Partially illegible cursive notation bypassed directly to doctor verification viewer for bedside clinical safety.'
-      }
-    ],
+    uploadedDocuments: [],
     consentHistory: true,
     consentDocuments: true,
-    consentAyush: true,
+    consentAyush: false,
     structuredSummary: {
-      chiefComplaintSummary: '44-year-old female presenting with 3-month history of Amlapitta (acid peptic burning) and early Sandhivata symptoms.',
-      hpi: 'Patient reports persistent burning in epigastrium (Vidaha), acid regurgitation (Amlodgara), and constipation (Vibandha). Symptoms severely exacerbated by tea and spicy diet. Bilateral knee stiffness noted on rising in mornings.',
-      pastHistory: 'Recurrent dyspepsia over 2 years, episodic NSAID self-medication.',
-      medicationsSummary: 'Pantoprazole 40mg PRN, Paracetamol SOS.',
-      allergiesSummary: 'Sulfa allergy (erythematous rash).',
-      rosSummary: 'Negative for GI bleeding, weight loss, dysphagia.',
-      ayushSummary: 'Prakriti: Pitta-Vata | Agni: Tikshna/Vishama | Koshtha: Krura (Constipation) | Dhatu affected: Rasa, Asthi, Majja | Dosha Dushti: Pitta-Vata dominant.',
+      chiefComplaintSummary: '61-year-old female presenting with 6 months of intermittent bilateral knee stiffness post-rest.',
+      hpi: 'Patient reports stiffness lasting 10-15 minutes after getting up from couch. No locking, giving way, or nighttime pain.',
+      pastHistory: 'Early osteoarthritis diagnosed 1 year ago. Vitals stable: BP 130/82, HR 70.',
+      medicationsSummary: 'Calcium carbonate 500mg + Vit D3 daily.',
+      allergiesSummary: 'None known.',
+      rosSummary: 'Zero red-flag inflammatory signs.',
       redFlagsSummary: [],
-      documentHighlights: [
-        'ESR slightly elevated at 24 mm/hr',
-        'Chronic PPI dependence noted from April prescription'
-      ],
-      suggestedWorkup: [
-        'Deepana-Pachana protocol (e.g. Shunthi + Musta)',
-        'Virechana / Sukhamridu Virechana consideration for Pitta-Vata shamana',
-        'Stool Occult Blood (routine screen for chronic dyspepsia)'
-      ]
+      documentHighlights: [],
+      suggestedWorkup: ['Low-impact quadriceps physiotherapy', 'Weight management counseling']
     },
     doctorNotes: '',
-    primaryDiagnosis: 'Amlapitta (Non-Ulcer Dyspepsia / Acid Reflux)',
-    namasteCode: 'NAM-AYU-DIG-001 | ICD-11 TM2: AA10',
     status: 'waiting',
-    createdAt: '09:40 AM'
+    createdAt: '09:30 AM'
+  },
+  'OPD-104': {
+    patientId: 'OPD-104',
+    token: 'OPD-104',
+    abhaId: '78-3312-9904-2231',
+    abhaVerified: true,
+    name: 'Gurpreet Singh',
+    age: '54',
+    gender: 'Male',
+    phone: '9988776655',
+    height: '172',
+    weight: '78',
+    language: 'en',
+    mode: 'modern',
+    chiefComplaint: 'Essential Hypertension Monthly Blood Pressure Check & Drug Refill',
+    chiefComplaintHi: 'हाई ब्लड प्रेशर की मासिक जांच और दवा पर्ची नवीनीकरण',
+    symptomDuration: 'Asymptomatic routine check',
+    symptomSite: 'Systemic cardiovascular follow-up',
+    symptomCharacter: 'Asymptomatic, compliant with daily Amlodipine',
+    symptomRadiation: 'None',
+    symptomTiming: 'Monthly refill cycle',
+    symptomSeverity: 1,
+    aggravatingFactors: 'High dietary salt',
+    relievingFactors: 'Regular medication adherence',
+    associatedSymptoms: ['No headache', 'No dizziness', 'No visual disturbances'],
+    prakriti: '',
+    agni: '',
+    koshtha: '',
+    aharaVihara: 'Reduced sodium diet, home-cooked meals',
+    nidra: 'Good 7.5 hours',
+    dashavidha: {
+      prakriti: 'Balanced Middle-Aged Adult',
+      vikriti: 'None evident (Controlled HTN)',
+      sara: 'Normal reserve',
+      samhanana: 'Broad chest frame',
+      pramana: 'BMI: 26.3',
+      satmya: 'Good adaptation',
+      sattva: 'Calm',
+      aharaShakti: 'Normal digestion',
+      vyayamaShakti: 'Brisk evening walk 30 mins',
+      vaya: 'Mature adult (54 Yrs)'
+    },
+    ashtaSthana: {
+      nadi: 'Regular (72 bpm, regular rate and volume)',
+      mutra: 'Normal',
+      mala: 'Normal',
+      jihwa: 'Clean',
+      shabda: 'Normal',
+      sparsha: 'Normal warmth',
+      druk: 'Fundus examination normal last visit',
+      akruti: 'Composed, non-distressed'
+    },
+    chronicConditions: [
+      { condition: 'Primary Essential Hypertension', duration: '3 years', medication: 'Tab Amlodipine 5mg OD (Morning)', status: 'Well-controlled (Clinic BP 126/82)', isDoctorVerified: true }
+    ],
+    allergies: [],
+    reviewOfSystems: ['Clinic BP: 126/82 mmHg', 'Heart Rate: 72 bpm regular', 'Zero end-organ or neurological complaints'],
+    triageLevel: 'normal',
+    redFlags: [],
+    adaptiveAnswers: {},
+    esiTriage: {
+      level: 5,
+      category: 'Non-Urgent',
+      color: '#10b981',
+      badgeBg: 'bg-emerald-500/10',
+      badgeText: 'text-emerald-700',
+      badgeBorder: 'border-emerald-500/30',
+      rationale: 'Asymptomatic hypertensive review. Clinic BP 126/82 mmHg, HR 72 bpm regular. Zero end-organ symptoms.',
+      immediateActions: [
+        'Record clinic sitting blood pressure (126/82 mmHg)',
+        'Check adherence to low-sodium dietary advice',
+        'Renew 30-day supply of Tab Amlodipine 5mg OD'
+      ],
+      predictedResources: ['Blood Pressure Reading', 'Maintenance Refill'],
+      algorithmSource: 'clinical-rule-engine'
+    },
+    uploadedDocuments: [],
+    consentHistory: true,
+    consentDocuments: true,
+    consentAyush: false,
+    structuredSummary: {
+      chiefComplaintSummary: '54-year-old male with controlled Essential Hypertension presenting for monthly checkup and medication refill.',
+      hpi: 'Patient reports 100% adherence to Tab Amlodipine 5mg every morning. Home BP logs average 122/80 to 128/84. Zero headaches or palpitations.',
+      pastHistory: 'Essential HTN since 2023. ECG normal.',
+      medicationsSummary: 'Amlodipine 5mg OD.',
+      allergiesSummary: 'None known.',
+      rosSummary: 'Vital signs optimal: BP 126/82, HR 72, SpO2 99%.',
+      redFlagsSummary: [],
+      documentHighlights: [],
+      suggestedWorkup: ['Continue current dosing', 'Annual renal function test due next quarter']
+    },
+    doctorNotes: '',
+    status: 'waiting',
+    createdAt: '09:45 AM'
   },
   'GEN-108': {
     patientId: 'GEN-108',
@@ -625,6 +779,28 @@ export const mockDatabase: Record<string, PatientData> = {
     koshtha: '',
     aharaVihara: '',
     nidra: '',
+    dashavidha: {
+      prakriti: 'Asthmatic Phenotype',
+      vikriti: 'Bronchial spasm and mild infection',
+      sara: 'Normal',
+      samhanana: 'Average',
+      pramana: 'Normal',
+      satmya: 'Atopic to dust/pollen',
+      sattva: 'Cooperative',
+      aharaShakti: 'Normal',
+      vyayamaShakti: 'Diminished during flare',
+      vaya: 'Young adult (29 Yrs)'
+    },
+    ashtaSthana: {
+      nadi: 'Slightly rapid (86 bpm)',
+      mutra: 'Normal',
+      mala: 'Normal',
+      jihwa: 'Mild coating',
+      shabda: 'Expiratory wheeze audible',
+      sparsha: 'Temp 99.2°F',
+      druk: 'Clear',
+      akruti: 'Mild respiratory effort'
+    },
     chronicConditions: [
       { condition: 'Bronchial Asthma (Childhood onset)', duration: 'Since age 12', medication: 'Inhaler Budecort 200mcg SOS', status: 'Intermittent' }
     ],
@@ -636,6 +812,7 @@ export const mockDatabase: Record<string, PatientData> = {
     redFlags: [
       'Wheezing exacerbation in known asthmatic patient'
     ],
+    adaptiveAnswers: {},
     esiTriage: {
       level: 3,
       category: 'Urgent',
@@ -643,15 +820,14 @@ export const mockDatabase: Record<string, PatientData> = {
       badgeBg: 'bg-amber-500/10',
       badgeText: 'text-amber-700',
       badgeBorder: 'border-amber-500/30',
-      rationale: 'Productive cough, low-grade fever, and wheeze in a known asthmatic. Hemodynamically stable but requires multiple diagnostic resources (CBC, PEFR, Chest X-Ray).',
+      rationale: 'Productive cough, low-grade fever, and wheeze in a known asthmatic. Hemodynamically stable but requires diagnostic workup (CBC, PEFR, Chest X-Ray).',
       immediateActions: [
         'Complete Blood Count (CBC) with differential',
         'Peak Expiratory Flow Rate (PEFR)',
-        'Chest X-Ray (PA view) if fever persists',
         'Symptomatic bronchodilator therapy'
       ],
-      predictedResources: ['Complete Blood Count', 'Chest Radiograph (PA)', 'Peak Flow Meter', 'Outpatient Inhaler Prescription'],
-      algorithmSource: 'gemini-3.5-flash-lite'
+      predictedResources: ['Complete Blood Count', 'Peak Flow Meter', 'Inhaler Prescription'],
+      algorithmSource: 'clinical-rule-engine'
     },
     uploadedDocuments: [],
     consentHistory: true,
@@ -659,105 +835,231 @@ export const mockDatabase: Record<string, PatientData> = {
     consentAyush: false,
     structuredSummary: {
       chiefComplaintSummary: '29-year-old male asthmatic presenting with 5-day acute lower respiratory infection and wheeze.',
-      hpi: 'Patient developed productive cough with yellowish sputum, low-grade fevers, and nocturnal wheezing. Relies on SOS Budesonide inhaler. No hemoptysis, no chest pain on inspiration.',
+      hpi: 'Patient developed productive cough with yellowish sputum, low-grade fevers, and nocturnal wheezing. Relies on SOS Budesonide inhaler.',
       pastHistory: 'Childhood bronchial asthma with atopic history.',
       medicationsSummary: 'Budecort 200mcg PRN.',
       allergiesSummary: 'Environmental dust/pollen atopy.',
-      rosSummary: 'Positive for productive sputum and wheezing. Negative for hemoptysis, chest pain.',
-      redFlagsSummary: ['Exacerbation of underlying reactive airway disease'],
-      documentHighlights: ['No prior documents uploaded in this visit'],
-      suggestedWorkup: [
-        'Peak Expiratory Flow Rate (PEFR)',
-        'Complete Blood Count (CBC) with Differential (Eosinophil count)',
-        'Chest X-Ray (PA view) if fever persists'
-      ]
+      rosSummary: 'SpO2 96% on room air, RR 20/min.',
+      redFlagsSummary: ['Expiratory wheeze requiring PEFR evaluation'],
+      documentHighlights: [],
+      suggestedWorkup: ['PEFR pre- and post-bronchodilator', 'CBC for eosinophilia']
     },
     doctorNotes: '',
     status: 'waiting',
-    createdAt: '10:05 AM'
+    createdAt: '09:40 AM'
   },
-  'IPD-304': {
-    patientId: 'IPD-304',
-    token: 'IPD-304',
-    abhaId: '33-9120-7714-8890',
+  'EMG-911': {
+    patientId: 'EMG-911',
+    token: 'EMG-911',
+    abhaId: '88-3921-9941-0021',
     abhaVerified: true,
-    name: 'Kavita Rajesh Singhania',
-    age: '52',
-    gender: 'Female',
-    phone: '9822334455',
-    height: '162',
-    weight: '68',
-    language: 'en',
+    name: 'Ramesh Kumar Sharma',
+    age: '58',
+    gender: 'Male',
+    phone: '9811223344',
+    height: '168',
+    weight: '76',
+    language: 'hi',
     mode: 'modern',
-    chiefComplaint: 'Severe acute exacerbation of Bronchial Asthma with secondary lower respiratory tract infection',
-    chiefComplaintHi: 'गंभीर दमा और श्वसन संक्रमण के कारण सांस फूलना',
-    symptomDuration: 'Admitted 3 days ago',
-    symptomSite: 'Chest / Lungs bilaterally',
-    symptomCharacter: 'Severe expiratory wheezing and breathlessness',
-    symptomRadiation: 'None',
-    symptomTiming: 'Continuous dyspnea on admission; now stabilizing with mild morning tightness',
-    symptomSeverity: 8,
-    aggravatingFactors: 'Exertion, cold air',
-    relievingFactors: 'Supplemental O2, IV bronchodilators',
-    associatedSymptoms: ['Tachypnea', 'Productive cough', 'Chest tightness'],
+    chiefComplaint: 'Acute retrosternal chest pain with diaphoresis and breathlessness',
+    chiefComplaintHi: 'सीने में तेज दबाव, पसीना और सांस लेने में कठिनाई',
+    symptomDuration: 'Started 45 minutes ago',
+    symptomSite: 'Center of chest radiating to left arm and jaw',
+    symptomCharacter: 'Crushing elephant-on-chest pressure',
+    symptomRadiation: 'Left shoulder, inner arm, lower jaw',
+    symptomTiming: 'Constant unremitting crushing pressure since 45 minutes',
+    symptomSeverity: 9,
+    aggravatingFactors: 'Any slight movement or exertion',
+    relievingFactors: 'None, persisting at complete rest',
+    associatedSymptoms: ['Profuse cold sweating', 'Shortness of breath', 'Nausea / Lightheadedness'],
     prakriti: '',
     agni: '',
     koshtha: '',
     aharaVihara: '',
     nidra: '',
+    dashavidha: {
+      prakriti: 'Emergency Cardiac Case',
+      vikriti: 'Acute coronary syndrome',
+      sara: 'Compromised',
+      samhanana: 'Average',
+      pramana: 'Overweight',
+      satmya: 'Compromised',
+      sattva: 'High anxiety',
+      aharaShakti: 'Suppressed',
+      vyayamaShakti: 'Severely impaired',
+      vaya: 'Late adult (58 Yrs)'
+    },
+    ashtaSthana: {
+      nadi: 'Tachycardia (104 bpm, weak pulse)',
+      mutra: 'Not assessed',
+      mala: 'Not assessed',
+      jihwa: 'Dry',
+      shabda: 'Short gasping sentences',
+      sparsha: 'Cold clammy diaphoretic skin',
+      druk: 'Anxious pale facies',
+      akruti: 'Levine sign positive (clenched fist over sternum)'
+    },
     chronicConditions: [
-      { condition: 'Severe Chronic Bronchial Asthma', duration: '15 years', medication: 'Inhaler Formoterol + Budesonide', status: 'Under treatment' },
-      { condition: 'Mild Essential Hypertension', duration: '3 years', medication: 'Tab Amlodipine 5mg OD', status: 'Stable' }
+      { condition: 'Type 2 Diabetes Mellitus', duration: '8 years', medication: 'Tab Metformin 1000mg BD', status: 'Sub-optimally controlled' },
+      { condition: 'Essential Hypertension', duration: '5 years', medication: 'Tab Telmisartan 40mg OD', status: 'Poor compliance' }
     ],
     allergies: [
-      { allergen: 'NSAIDs (Aspirin)', reaction: 'Bronchospasm / Asthma exacerbation', severity: 'severe' }
+      { allergen: 'Penicillin', reaction: 'Anaphylaxis / Urticaria', severity: 'severe' }
     ],
-    triageLevel: 'priority',
-    redFlags: ['Asthma flare-up requiring inpatient monitoring'],
+    reviewOfSystems: ['Dyspnea on mild exertion', 'Occasional orthopnea', 'Bilateral pedal edema'],
+    triageLevel: 'emergency',
+    redFlags: [
+      'CRITICAL: Acute crushing retrosternal chest pain radiating to left arm',
+      'CRITICAL: Associated diaphoresis (cold sweats) and acute dyspnea',
+      'HIGH RISK: Diaphoretic presentation with known DM-2 and HTN background'
+    ],
+    adaptiveAnswers: {},
     esiTriage: {
-      level: 2,
-      category: 'Emergent',
-      color: '#f97316',
-      badgeBg: 'bg-orange-500/10',
-      badgeText: 'text-orange-700',
-      badgeBorder: 'border-orange-500/30',
-      rationale: 'Severe acute exacerbation of bronchial asthma with marked expiratory wheezing, secondary lower respiratory infection, and initial SpO2 89%. High risk of acute respiratory fatigue.',
+      level: 1,
+      category: 'Resuscitation',
+      color: '#ef4444',
+      badgeBg: 'bg-red-500/10',
+      badgeText: 'text-red-700',
+      badgeBorder: 'border-red-500/30',
+      rationale: 'Acute crushing chest pain, cold diaphoresis, dyspnea in a 58yo diabetic male. High probability of STEMI / Acute Coronary Syndrome.',
       immediateActions: [
-        'Immediate high-flow O2 therapy titrated to SpO2 >= 94%',
-        'Nebulization with Duolin (Levosalbutamol + Ipratropium) Q4H',
-        'IV Hydrocortisone 100mg bolus TID',
-        'Continuous pulse oximetry monitoring'
+        'Immediate 12-lead ECG within 10 minutes',
+        'Establish dual large-bore IV access and continuous cardiac telemetry',
+        'Load Aspirin 325mg chewable + Clopidogrel 300mg immediately',
+        'Alert on-call interventional cardiology cath lab team'
       ],
-      predictedResources: ['Continuous Pulse Oximetry', 'Nebulization Therapy', 'IV Steroids / Antibiotics', 'Arterial Blood Gas'],
-      algorithmSource: 'gemini-3.5-flash-lite'
+      predictedResources: ['12-Lead ECG', 'High-Sensitivity Troponin I', 'Dual Antiplatelet Loading', 'Urgent Coronary Angiography'],
+      algorithmSource: 'clinical-rule-engine'
     },
-    reviewOfSystems: [],
+    uploadedDocuments: [
+      {
+        id: 'doc-1',
+        name: 'MaxLab_Lipid_HbA1c_July2024.pdf',
+        type: 'Lab Report',
+        date: '14 Jul 2024',
+        timestamp: Date.now() - 86400000 * 120,
+        uploadedBy: 'patient',
+        isHandwritten: false,
+        ocrStatus: 'complete',
+        extractedDiagnoses: ['Hyperlipidemia', 'Poorly controlled Glycemia'],
+        extractedMeds: [],
+        extractedLabs: [
+          { test: 'HbA1c', value: '9.4', unit: '%', range: '4.0 - 5.6', isOutOfRange: true },
+          { test: 'Total Cholesterol', value: '248', unit: 'mg/dL', range: '< 200', isOutOfRange: true },
+          { test: 'Serum Creatinine', value: '1.4', unit: 'mg/dL', range: '0.7 - 1.2', isOutOfRange: true }
+        ],
+        notes: 'Digitally printed diagnostic panel from MaxLab Diagnostics.'
+      }
+    ],
+    consentHistory: true,
+    consentDocuments: true,
+    consentAyush: false,
+    structuredSummary: {
+      chiefComplaintSummary: '58-year-old male with acute crushing chest pain, profuse sweating, and dyspnea since 45 minutes.',
+      hpi: 'Started at rest with sudden intense substernal pressure radiating down left arm and jaw. Accompanied by severe diaphoresis and nausea. Known poorly controlled DM-2 and HTN.',
+      pastHistory: '8-year history of Type 2 DM (HbA1c 9.4%), 5-year history of Essential Hypertension.',
+      medicationsSummary: 'Metformin 1000mg BD, Telmisartan 40mg OD (erratic compliance).',
+      allergiesSummary: 'Penicillin (causes severe anaphylaxis).',
+      rosSummary: 'Cold clammy diaphoretic skin, tachypneic (RR 24), tachycardic (HR 104), BP 154/98.',
+      redFlagsSummary: [
+        'Acute crushing substernal chest pain radiating to left arm',
+        'Associated diaphoresis and dyspnea',
+        'High cardiovascular risk profile'
+      ],
+      documentHighlights: ['Prior HbA1c 9.4%', 'Total Cholesterol 248 mg/dL', 'Creatinine 1.4 mg/dL'],
+      suggestedWorkup: ['Stat 12-lead ECG', 'Troponin I / CK-MB', 'Chest X-Ray portable', 'Stat Cardiology Consult']
+    },
+    doctorNotes: '',
+    status: 'waiting',
+    createdAt: '09:15 AM'
+  },
+  'IPD-304': {
+    patientId: 'IPD-304',
+    token: 'IPD-304',
+    abhaId: '45-2019-3382-7711',
+    abhaVerified: true,
+    name: 'Sunita Devi Verma',
+    age: '44',
+    gender: 'Female',
+    phone: '9844332211',
+    height: '158',
+    weight: '62',
+    language: 'hi',
+    mode: 'modern',
+    chiefComplaint: 'Post-acute Bronchial Exacerbation & Pneumonia - Step-down IV Care',
+    chiefComplaintHi: 'दमा और फेफड़ों के संक्रमण के बाद भर्ती वार्ड देखभाल',
+    symptomDuration: 'Day 3 In-patient',
+    symptomSite: 'Chest / Lungs',
+    symptomCharacter: 'Resolving cough with thinning sputum, improving dyspnea',
+    symptomRadiation: 'None',
+    symptomTiming: 'Improving',
+    symptomSeverity: 3,
+    aggravatingFactors: 'Exertion',
+    relievingFactors: 'Supplemental O2, IV antibiotics',
+    associatedSymptoms: ['Mild productive cough'],
+    prakriti: '',
+    agni: '',
+    koshtha: '',
+    aharaVihara: 'Hospital soft diet',
+    nidra: 'Adequate',
+    dashavidha: {
+      prakriti: 'Inpatient Ward Patient',
+      vikriti: 'Resolving lower respiratory infection',
+      sara: 'Improving',
+      samhanana: 'Average',
+      pramana: 'Normal',
+      satmya: 'Moderate',
+      sattva: 'Good',
+      aharaShakti: 'Normal',
+      vyayamaShakti: 'Bedside ambulation only',
+      vaya: 'Adult (44 Yrs)'
+    },
+    ashtaSthana: {
+      nadi: 'Regular (82 bpm)',
+      mutra: 'Normal',
+      mala: 'Normal',
+      jihwa: 'Clean',
+      shabda: 'Clear voice',
+      sparsha: 'Afebrile (98.6°F)',
+      druk: 'Normal',
+      akruti: 'Resting comfortably'
+    },
+    chronicConditions: [
+      { condition: 'Bronchial Asthma', duration: '5 years', medication: 'Inhaler Formoterol + Budesonide', status: 'Under treatment' }
+    ],
+    allergies: [
+      { allergen: 'Sulfa Drugs', reaction: 'Skin rashes', severity: 'moderate' }
+    ],
+    reviewOfSystems: ['Afebrile for 24h', 'SpO2 96% on ambient air', 'Lungs: Minimal bilateral rhonchi'],
+    triageLevel: 'normal',
+    redFlags: [],
+    adaptiveAnswers: {},
     uploadedDocuments: [],
     consentHistory: true,
     consentDocuments: true,
     consentAyush: false,
     structuredSummary: {
-      chiefComplaintSummary: '52-year-old female admitted for acute exacerbation of severe asthma with secondary infection.',
-      hpi: 'Patient presented with severe dyspnea, wheezing and productive cough. SpO2 on admission was 89% room air. Admitted to Ward 4B for oxygen therapy, IV steroids and nebulization protocol.',
-      pastHistory: 'Chronic asthma (15 yrs), HTN (3 yrs). Known aspirin sensitivity.',
-      medicationsSummary: 'IV Ceftriaxone, IV Hydrocortisone, Nebulization Duolin, IV Pantoprazole.',
-      allergiesSummary: 'Aspirin/NSAID induced asthma.',
-      rosSummary: 'Chest wheeze improving, SpO2 96% on room air.',
-      redFlagsSummary: ['Inpatient respiratory care'],
+      chiefComplaintSummary: '44yo female admitted for acute asthma exacerbation, now on Day 3 post-stabilization.',
+      hpi: 'Admitted from casualty 3 days ago with wheezing and hypoxemia. Significantly improved with IV antibiotics and bronchodilators.',
+      pastHistory: 'Known asthmatic.',
+      medicationsSummary: 'IV Ceftriaxone, IV Hydrocortisone, Duolin nebulization.',
+      allergiesSummary: 'Sulfa antibiotics.',
+      rosSummary: 'SpO2 96% room air, vitals stable.',
+      redFlagsSummary: [],
       documentHighlights: [],
-      suggestedWorkup: ['Daily PEFR', 'Serial SpO2 monitoring', 'Step down to oral steroids']
+      suggestedWorkup: ['Step down to oral Prednisolone', 'Discharge planning for Day 4']
     },
-    doctorNotes: 'Day 3 Rounds: Patient afebrile, wheeze markedly reduced. Plan: Wean off IV steroids to oral Prednisolone. Prepare for discharge tomorrow.',
+    doctorNotes: '',
     status: 'admitted',
-    createdAt: '08:30 AM',
-    admittedWard: 'Pulmonary Ward 4B (Acute Care)',
-    bedNumber: 'Bed 12',
-    admissionDate: '06 Sep 2026, 04:15 PM (Day 3)',
+    admittedWard: 'Female Medical Ward 3',
+    bedNumber: 'Bed 204-B',
+    admissionDate: '11 Nov 2026',
     ipdStage: 'Stabilizing',
+    createdAt: '08:00 AM',
     ipdVitals: {
-      spO2: '96%',
-      pulse: '82 bpm',
       bp: '126/80 mmHg',
+      pulse: '82 bpm',
+      spO2: '96%',
       temp: '98.6°F',
       respiratoryRate: '18/min'
     },
@@ -769,18 +1071,10 @@ export const mockDatabase: Record<string, PatientData> = {
       { id: 'm5', name: 'Tab Paracetamol', dose: '650mg Oral', route: 'Oral', schedule: 'SOS (If Temp > 100°F)', lastGiven: 'Yesterday 09:00 PM', status: 'Active' }
     ],
     ipdProgressNotes: [
-      { id: 'n1', timestamp: '06 Sep, 05:00 PM (Admission)', doctorName: 'Dr. R. Verma, MD', note: 'Admitted from Emergency with acute exacerbation of severe asthma & lower respiratory infection. Wheezing +++, SpO2 89% on room air. Started on 2L O2, IV steroids, IV antibiotics and scheduled nebulizations.', vitalsSummary: 'SpO2: 89% | BP: 142/90 | HR: 104' },
-      { id: 'n2', timestamp: '07 Sep, 09:30 AM (Day 2 Morning Rounds)', doctorName: 'Dr. R. Verma, MD', note: 'Dyspnea significantly improved. Wheezing diminished, SpO2 94% on 2L O2. Patient able to speak in full sentences. Chest air entry improved bilaterally. Continued current IV regimen.', vitalsSummary: 'SpO2: 94% | BP: 132/84 | HR: 90' },
-      { id: 'n3', timestamp: '08 Sep, 08:45 AM (Day 3 Today\'s Rounds)', doctorName: 'Dr. R. Verma, MD', note: 'Patient afebrile for past 24 hours. Cough productive with thinning sputum. SpO2 96% maintaining well on room air. Plan: Wean off supplemental O2. Step down IV Hydrocortisone to oral Prednisolone 30mg tomorrow. Discharge planned for Day 4 if stable.', vitalsSummary: 'SpO2: 96% | BP: 126/80 | HR: 82' }
+      { id: 'n1', timestamp: '11 Nov, 05:00 PM (Admission)', doctorName: 'Dr. R. Verma, MD', note: 'Admitted from Casualty with acute exacerbation of severe asthma. Started on supplemental O2, IV steroids, and scheduled nebulizations.', vitalsSummary: 'SpO2: 89% | BP: 142/90 | HR: 104' },
+      { id: 'n2', timestamp: '12 Nov, 09:30 AM (Day 2 Rounds)', doctorName: 'Dr. R. Verma, MD', note: 'Dyspnea significantly improved. Wheezing diminished, SpO2 94% on 2L O2. Continued current IV regimen.', vitalsSummary: 'SpO2: 94% | BP: 132/84 | HR: 90' },
+      { id: 'n3', timestamp: '13 Nov, 08:45 AM (Day 3 Today)', doctorName: 'Dr. R. Verma, MD', note: 'Patient afebrile for past 24 hours. Cough productive with thinning sputum. SpO2 96% maintaining well on room air. Step down IV Hydrocortisone to oral Prednisolone 30mg tomorrow. Discharge planned if stable.', vitalsSummary: 'SpO2: 96% | BP: 126/80 | HR: 82' }
     ]
-  },
-  'NEU-214': {
-    ...DEMO_PRESET_PATIENTS[3].patient,
-    status: 'waiting'
-  },
-  'CRD-502': {
-    ...DEMO_PRESET_PATIENTS[4].patient,
-    status: 'waiting'
   }
 };
 
@@ -846,6 +1140,94 @@ export const getFreshDemoProfile = (): PatientProfile => ({
 });
 
 export const mockProfiles: Record<string, PatientProfile> = {
+  '9876543210': {
+    abhaId: '14-8821-3094-1102',
+    name: 'Priya Sen',
+    age: '42',
+    gender: 'Female',
+    phone: '9876543210',
+    height: '162',
+    weight: '64',
+    chronicConditions: [
+      { condition: 'Type 2 Diabetes Mellitus', duration: '4 years', medication: 'Tab Metformin 500mg BD', status: 'Well-controlled (HbA1c 6.8%)', isDoctorVerified: true }
+    ],
+    allergies: [],
+    uploadedDocuments: [
+      {
+        id: 'doc-sen-1',
+        name: 'Metropolis_FastingGlucose_HbA1c.pdf',
+        type: 'Lab Report',
+        date: '10 Nov 2026',
+        timestamp: Date.now() - 86400000 * 3,
+        uploadedBy: 'patient',
+        isHandwritten: false,
+        ocrStatus: 'complete',
+        extractedDiagnoses: ['Well-controlled Glycemia'],
+        extractedMeds: [],
+        extractedLabs: [
+          { test: 'Fasting Blood Glucose', value: '112', unit: 'mg/dL', range: '70 - 100', isOutOfRange: true },
+          { test: 'HbA1c', value: '6.8', unit: '%', range: '4.0 - 5.6', isOutOfRange: true },
+          { test: 'Serum Creatinine', value: '0.9', unit: 'mg/dL', range: '0.6 - 1.1', isOutOfRange: false }
+        ],
+        notes: 'Printed automated biochemical report from Metropolis Healthcare.'
+      }
+    ],
+    pastVisits: [
+      {
+        date: '12 Aug 2026',
+        hospital: 'Fortis Hospital Mohali',
+        department: 'Endocrinology OPD',
+        reason: 'Routine quarterly diabetes review.',
+        diagnosis: 'Type 2 Diabetes Mellitus - Good Control',
+        prescriptions: ['Tab Metformin 500mg BD'],
+        patientVisibleNotes: 'Continue 45-minute daily brisk walk and low glycemic index meals. Repeat HbA1c in 3 months.',
+        doctorNotesHidden: 'HbA1c stable at 6.9%. No microvascular signs. Continue current regimen.'
+      }
+    ]
+  },
+  '9812345678': {
+    abhaId: '32-1094-5582-9901',
+    name: 'Rohan Gupta',
+    age: '28',
+    gender: 'Male',
+    phone: '9812345678',
+    height: '178',
+    weight: '72',
+    chronicConditions: [],
+    allergies: [],
+    uploadedDocuments: [],
+    pastVisits: []
+  },
+  '9744221100': {
+    abhaId: '55-4920-1123-4488',
+    name: 'Meenakshi Sundaram',
+    age: '61',
+    gender: 'Female',
+    phone: '9744221100',
+    height: '155',
+    weight: '68',
+    chronicConditions: [
+      { condition: 'Primary Bilateral Knee Osteoarthritis (Grade 1-2)', duration: '1 year', medication: 'Calcium 500mg + Vitamin D3 OD', status: 'Stable', isDoctorVerified: true }
+    ],
+    allergies: [],
+    uploadedDocuments: [],
+    pastVisits: []
+  },
+  '9988776655': {
+    abhaId: '78-3312-9904-2231',
+    name: 'Gurpreet Singh',
+    age: '54',
+    gender: 'Male',
+    phone: '9988776655',
+    height: '172',
+    weight: '78',
+    chronicConditions: [
+      { condition: 'Primary Essential Hypertension', duration: '3 years', medication: 'Tab Amlodipine 5mg OD (Morning)', status: 'Well-controlled (Clinic BP 126/82)', isDoctorVerified: true }
+    ],
+    allergies: [],
+    uploadedDocuments: [],
+    pastVisits: []
+  },
   '9811223344': getFreshDemoProfile(),
   ...DEMO_PRESET_PATIENTS.reduce((acc, item) => {
     if (item.personaProfile) {

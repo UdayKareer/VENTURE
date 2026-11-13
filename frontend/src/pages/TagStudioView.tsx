@@ -122,7 +122,13 @@ export default function TagStudioView() {
         </div>
 
         <div className="flex items-center gap-2 text-xs font-mono text-slate-500">
-          <span className="px-2.5 py-1 rounded-md bg-slate-100 border border-slate-200">
+          <button
+            onClick={() => navigate('/presentation')}
+            className="px-3 py-1.5 rounded-lg bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
+          >
+            <QrCode size={13} /> Judge QRs
+          </button>
+          <span className="px-2.5 py-1 rounded-md bg-slate-100 border border-slate-200 hidden sm:inline-block">
             Decal Spec: 3M Retro-Reflective Class 1
           </span>
         </div>

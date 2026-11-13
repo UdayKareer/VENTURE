@@ -15,6 +15,7 @@ import TagStudioView from './pages/TagStudioView';
 import BystanderEmergencyHUD from './pages/BystanderEmergencyHUD';
 import AmbulanceFieldTriage from './pages/AmbulanceFieldTriage';
 import HospitalCheckIn from './pages/HospitalCheckIn';
+import JudgePresentationView from './pages/JudgePresentationView';
 
 const ProtectedDoctorRoute = ({ children }: { children: React.ReactNode }) => {
   // Direct access enabled for seamless hackathon live demonstration
@@ -44,7 +45,11 @@ function App() {
         <Route path="/hospital/checkin" element={<HospitalCheckIn />} />
         <Route path="/checkin" element={<HospitalCheckIn />} />
 
-        {/* 5. Doctor Portal & Clinical Dashboard (UI Strictly Preserved) */}
+        {/* 5. Live Presentation & Judge Screening Hub */}
+        <Route path="/presentation" element={<JudgePresentationView />} />
+        <Route path="/showcase" element={<JudgePresentationView />} />
+
+        {/* 6. Doctor Portal & Clinical Dashboard (UI Strictly Preserved) */}
         <Route path="/doctor/login" element={<Login />} />
         <Route 
           path="/doctor" 

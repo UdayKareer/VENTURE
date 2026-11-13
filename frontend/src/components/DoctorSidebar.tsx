@@ -180,18 +180,25 @@ export default function DoctorSidebar({ activeTab, setActiveTab, onLogout }: Doc
         </div>
 
         {/* Quick Cross-Portal Nav Links */}
-        <div className="mt-2.5 grid grid-cols-2 gap-2">
+        <div className="mt-2.5 grid grid-cols-3 gap-1.5">
+          <button
+            onClick={() => navigate('/presentation')}
+            className="py-1.5 px-1 rounded-lg bg-teal-950/80 hover:bg-teal-900 text-[10px] font-bold text-teal-300 border border-teal-800/80 flex items-center justify-center gap-1 transition-colors"
+            title="Open Live Presentation & Judge Scannable QRs"
+          >
+            <QrCode size={11} /> Judge QRs
+          </button>
           <button
             onClick={() => navigate('/studio')}
-            className="py-1.5 px-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-[11px] font-bold text-amber-400 border border-slate-800 flex items-center justify-center gap-1.5 transition-colors"
+            className="py-1.5 px-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-[10px] font-bold text-amber-400 border border-slate-800 flex items-center justify-center gap-1 transition-colors"
           >
-            <QrCode size={12} /> Tag Studio
+            <QrCode size={11} /> Tag Studio
           </button>
           <button
             onClick={() => navigate('/hospital/checkin')}
-            className="py-1.5 px-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-[11px] font-bold text-teal-400 border border-slate-800 flex items-center justify-center gap-1.5 transition-colors"
+            className="py-1.5 px-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-[10px] font-bold text-teal-400 border border-slate-800 flex items-center justify-center gap-1 transition-colors"
           >
-            <Building2 size={12} /> Hospital QR
+            <Building2 size={11} /> Hospital QR
           </button>
         </div>
 
