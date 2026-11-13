@@ -763,38 +763,36 @@ export default function DoctorDashboard() {
     }
     syncToProfileVisit(updated, prescribedMeds, doctorNotes, '(Discharged/Outpatient)');
     syncPatientToSupabase(updated);
+
+    // Cross-tab broadcast & localStorage persistence
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('medikiosk_p_' + updated.token, JSON.stringify(updated));
+        localStorage.setItem('medikiosk_latest_patient', JSON.stringify(updated));
+      } catch (e) {}
+    }
     usePatientStore.getState().triggerQueueUpdate();
 
-    // Do NOT auto-advance immediately. Update the selected patient to the 'accepted' status so the UI shows them as relieved,
-    // and show the summary modal so the doctor can see what they wrote.
-    setSelectedPatient(updated);
-    setInspectingRelievedToken(updated.token);
-    
-    // Trigger the prescription summary modal!
-    setShowPrescriptionModal(true);
+    // Auto-advance immediately to the next waiting patient in the active queue
+    const remainingActive = Object.values(mockDatabase).filter(
+      p => p.token !== updated.token && p.status !== 'accepted' && p.status !== 'admitted'
+    );
+    if (remainingActive.length > 0) {
+      setInspectingRelievedToken(null);
+      handleSelectPatient(remainingActive[0]);
+      setStatusMessage(`✅ Patient ${updated.name} (Token: ${updated.token}) relieved & consultation finalized. Next case loaded.`);
+    } else {
+      setSelectedPatient(updated);
+      setInspectingRelievedToken(updated.token);
+      setStatusMessage(`✅ Patient ${updated.name} (Token: ${updated.token}) relieved. All patients in queue have concluded.`);
+    }
 
-    setStatusMessage(`Patient ${updated.name} (Token: ${updated.token}) marked OPD Done & Relieved. Summary saved to history.`);
-    setTimeout(() => setStatusMessage(''), 3500);
+    setTimeout(() => setStatusMessage(''), 4000);
   };
 
-  // We need a function to auto-advance AFTER the modal is closed, if the patient is relieved.
+  // Function to close modal if doctor manually opens prescription print preview
   const handleClosePrescriptionModal = () => {
     setShowPrescriptionModal(false);
-    
-    // If the patient we are currently viewing was just relieved (and we are inspecting them),
-    // let's auto-advance to the next patient in the queue now that the summary is closed.
-    if (selectedPatient.status === 'accepted' && inspectingRelievedToken === selectedPatient.token) {
-      const remainingActive = Object.values(mockDatabase).filter(
-        p => p.token !== selectedPatient.token && p.status !== 'accepted' && p.status !== 'admitted'
-      );
-      if (remainingActive.length > 0) {
-        setInspectingRelievedToken(null);
-        handleSelectPatient(remainingActive[0]);
-      } else {
-        // Queue is completely done
-        setInspectingRelievedToken(null);
-      }
-    }
   };
 
   const handleAdmitPatient = () => {
@@ -2048,9 +2046,17 @@ export default function DoctorDashboard() {
 
                         <button
                           onClick={() => {
-                            const traumaToken = Object.keys(mockDatabase).find(k => k.startsWith('TRAUMA')) || selectedPatient.token;
-                            if (mockDatabase[traumaToken]) {
-                              setSelectedPatient(mockDatabase[traumaToken]);
+                            const traumaTokens = Object.keys(mockDatabase).filter(k => k.startsWith('TRAUMA'));
+                            const latestTraumaToken = traumaTokens[traumaTokens.length - 1];
+                            if (latestTraumaToken && mockDatabase[latestTraumaToken]) {
+                              handleSelectPatient(mockDatabase[latestTraumaToken]);
+                              setSearchToken(latestTraumaToken);
+                            } else if (incomingAmbulance?.victimName) {
+                              const found = Object.values(mockDatabase).find(p => p.name === incomingAmbulance.victimName);
+                              if (found) {
+                                handleSelectPatient(found);
+                                setSearchToken(found.token);
+                              }
                             }
                           }}
                           className="px-3.5 py-2 rounded-xl bg-white text-red-700 font-black text-xs hover:bg-red-50 shadow-md transition-transform active:scale-95 cursor-pointer"
@@ -2185,20 +2191,27 @@ export default function DoctorDashboard() {
                       )}
 
                       {selectedPatient.status === 'accepted' ? (
-                        <button
-                          disabled
-                          className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-xl text-xs font-bold cursor-default"
-                        >
-                          <CheckCircle2 size={14} className="text-emerald-700" />
-                          <span>Relieved & Done</span>
-                        </button>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="flex items-center gap-1.5 px-3 py-2 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-xl text-xs font-bold">
+                            <CheckCircle2 size={14} className="text-emerald-700" />
+                            <span>Relieved & ABDM Synced</span>
+                          </span>
+                          <button
+                            onClick={() => setShowPrescriptionModal(true)}
+                            className="flex items-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 rounded-xl text-xs font-bold cursor-pointer transition-colors"
+                            title="View or print official prescription document"
+                          >
+                            <Printer size={13} />
+                            <span>View / Print Prescription Slip</span>
+                          </button>
+                        </div>
                       ) : (
                         <button
                           onClick={handleSaveToHIS}
                           className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2 bg-slate-900 hover:bg-slate-950 text-white rounded-xl text-xs font-bold transition-all shadow-xs active:scale-98 cursor-pointer"
                         >
                           <Save size={14} />
-                          <span>OPD Done / Relieved</span>
+                          <span>Relieve Patient (Complete OPD)</span>
                         </button>
                       )}
                     </div>

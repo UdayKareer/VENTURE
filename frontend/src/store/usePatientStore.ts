@@ -1333,9 +1333,14 @@ export const usePatientStore = create<PatientStore>((set, get) => ({
 
     // 108 Ambulance Real-Time Telemetry Listener
     socket.off('incoming_ambulance_alert');
-    socket.on('incoming_ambulance_alert', (telemetry: AmbulanceTelemetry) => {
+    socket.on('incoming_ambulance_alert', (payload: any) => {
+      const telemetry: AmbulanceTelemetry = payload?.telemetry || payload;
+      const patient: PatientData | undefined = payload?.patient;
       console.log('⚡ Socket event: incoming_ambulance_alert received:', telemetry);
       set({ incomingAmbulance: telemetry });
+      if (patient && patient.token) {
+        mockDatabase[patient.token] = patient;
+      }
       // Play high-acuity trauma chime if sound enabled
       if (get().soundEnabled && typeof window !== 'undefined') {
         try {
@@ -1352,6 +1357,16 @@ export const usePatientStore = create<PatientStore>((set, get) => ({
           osc.start();
           osc.stop(audioCtx.currentTime + 0.45);
         } catch (e) {}
+      }
+      get().triggerQueueUpdate();
+    });
+
+    socket.off('ambulance_trauma_patient');
+    socket.on('ambulance_trauma_patient', (payload: { telemetry: AmbulanceTelemetry; patient: PatientData }) => {
+      console.log('⚡ Socket event: ambulance_trauma_patient received:', payload);
+      if (payload?.telemetry) set({ incomingAmbulance: payload.telemetry });
+      if (payload?.patient && payload.patient.token) {
+        mockDatabase[payload.patient.token] = payload.patient;
       }
       get().triggerQueueUpdate();
     });
@@ -1399,6 +1414,18 @@ export const usePatientStore = create<PatientStore>((set, get) => ({
             }
           } catch (e) {}
         });
+
+        // Hydrate latest active ambulance telemetry if present
+        const latestAmb = localStorage.getItem('medikiosk_latest_ambulance');
+        if (latestAmb) {
+          try {
+            const parsedAmb = JSON.parse(latestAmb);
+            if (parsedAmb && parsedAmb.telemetryId) {
+              set({ incomingAmbulance: parsedAmb });
+            }
+          } catch (e) {}
+        }
+
         get().triggerQueueUpdate();
       } catch (e) {}
 
@@ -1407,6 +1434,12 @@ export const usePatientStore = create<PatientStore>((set, get) => ({
         channel.onmessage = (ev) => {
           if (ev.data?.type === 'PATIENT_SAVED' && ev.data.patient) {
             mockDatabase[ev.data.patient.token] = ev.data.patient;
+            get().triggerQueueUpdate();
+          } else if (ev.data?.type === 'AMBULANCE_DISPATCH') {
+            if (ev.data.telemetry) set({ incomingAmbulance: ev.data.telemetry });
+            if (ev.data.patient && ev.data.patient.token) {
+              mockDatabase[ev.data.patient.token] = ev.data.patient;
+            }
             get().triggerQueueUpdate();
           } else if (ev.data?.type === 'DOC_ADDED' && ev.data.patientToken && ev.data.doc) {
             let target: PatientData | undefined = mockDatabase[ev.data.patientToken];
@@ -1437,6 +1470,15 @@ export const usePatientStore = create<PatientStore>((set, get) => ({
             const p = JSON.parse(ev.newValue);
             if (p && p.token) {
               mockDatabase[p.token] = p;
+              get().triggerQueueUpdate();
+            }
+          } catch (e) {}
+        }
+        if (ev.key === 'medikiosk_latest_ambulance' && ev.newValue) {
+          try {
+            const amb = JSON.parse(ev.newValue);
+            if (amb && amb.telemetryId) {
+              set({ incomingAmbulance: amb });
               get().triggerQueueUpdate();
             }
           } catch (e) {}
@@ -1546,44 +1588,82 @@ export const usePatientStore = create<PatientStore>((set, get) => ({
   },
 
   dispatchAmbulanceTelemetry: (telemetry: AmbulanceTelemetry) => {
-    socket.emit('ambulance_dispatch', telemetry);
     set({ incomingAmbulance: telemetry });
 
-    // Also automatically register victim into hospital queue as critical ESI-1 trauma
+    // Dynamically retrieve selected victim profile (not a static preset!)
+    const member = telemetry.victimMember || get().vehicleTag.members.find(m => m.id === telemetry.victimId);
+    const isGuest = telemetry.victimId === 'guest-rider';
+    const victimName = telemetry.victimName || (member ? member.name : (isGuest ? 'Unidentified Guest Borrower' : 'Ramesh Verma'));
+    const victimAge = String(telemetry.victimAge || (member ? member.age : 'Unknown'));
+    const victimGender = telemetry.victimGender || (member ? member.gender : 'Unknown');
+    const victimBlood = telemetry.bloodGroup || (member ? member.bloodGroup : (isGuest ? 'Unknown (O- Standby)' : 'O+'));
+    const victimAbha = telemetry.abhaId || (member ? member.abhaId : '14-8921-4402-1923');
+    const allergiesList = telemetry.criticalAllergies?.length 
+      ? telemetry.criticalAllergies 
+      : (member ? member.criticalAllergies : []);
+    const chronicList = telemetry.chronicConditions?.length 
+      ? telemetry.chronicConditions 
+      : (member ? member.chronicConditions : []);
+    const medsList = telemetry.currentMedications?.length 
+      ? telemetry.currentMedications 
+      : (member ? member.currentMedications : []);
+
     const token = 'TRAUMA-' + Math.floor(100 + Math.random() * 900);
+
+    // Convert live incident/wound photographs to uploadedDocuments so doctor can inspect in chart
+    const docImages: UploadedDocument[] = (telemetry.incidentPhotos || []).map((img, idx) => ({
+      id: `doc-wound-${Date.now()}-${idx}`,
+      name: `Ambulance_Field_Wound_${token}_${idx + 1}.jpg`,
+      type: 'Bedside Scan',
+      date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+      timestamp: Date.now(),
+      uploadedBy: 'system',
+      extractedDiagnoses: telemetry.injuryTags,
+      extractedMeds: [],
+      extractedLabs: [],
+      fileUrl: img,
+      notes: `Transmitted live from 108 Ambulance Unit (${telemetry.telemetryId}). Incident wound evaluation.`
+    }));
+
     const traumaPatient: PatientData = {
       ...createInitialPatient(),
       patientId: token,
       token: token,
-      abhaId: '14-8921-4402-1923',
-      abhaVerified: true,
-      name: telemetry.victimName || 'Ramesh Verma',
-      age: '52',
-      gender: 'Male',
-      phone: '+91 98112 24442',
+      abhaId: victimAbha,
+      abhaVerified: !isGuest,
+      name: victimName,
+      age: victimAge,
+      gender: victimGender,
+      phone: member?.emergencyContact?.realPhone || '+91 98112 24442',
       height: '172',
       weight: '75',
       language: 'en',
       mode: 'modern',
-      chiefComplaint: `HIGH-SPEED ROAD TRAFFIC COLLISION (RTC) — ${telemetry.injuryTags.join(', ')}`,
+      chiefComplaint: `HIGH-SPEED ROAD TRAFFIC COLLISION (RTC) — ${telemetry.injuryTags.join(' • ')}`,
       symptomDuration: 'Injury sustained 15 mins ago',
+      symptomSite: telemetry.injuryTags.join(', '),
+      symptomCharacter: 'High kinetic energy polytrauma',
       symptomSeverity: 10,
       triageLevel: 'emergency',
       status: 'waiting',
       createdAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       createdTimestamp: Date.now(),
-      chronicConditions: [
-        { condition: 'Coronary Stent (LAD 2022)', duration: '4 years', medication: 'Ecosprin 75mg OD', status: 'High Bleeding Risk' },
-        { condition: 'Type 2 Diabetes', duration: '8 years', medication: 'Metformin', status: 'Active' }
-      ],
-      allergies: [
-        { allergen: 'Penicillin', reaction: 'Severe Anaphylactic Shock', severity: 'severe' },
-        { allergen: 'Sulfa Antibiotics', reaction: 'Angioedema', severity: 'moderate' }
-      ],
+      chronicConditions: chronicList.map(c => ({
+        condition: c,
+        duration: 'From tag medical profile',
+        medication: medsList.join(', ') || 'N/A',
+        status: 'Active Profile'
+      })),
+      allergies: allergiesList.map(a => ({
+        allergen: a,
+        reaction: 'Allergy alert from emergency profile',
+        severity: 'severe' as const
+      })),
       redFlags: [
-        `CRITICAL: Severe Polytrauma (GCS ${telemetry.gcsScore || 8}/15)`,
-        'CRITICAL: Suspected acute traumatic brain injury & closed head hemorrhage',
-        'CONTRAINDICATION: Severe Penicillin allergy — strictly avoid beta-lactam prophylaxis'
+        `CRITICAL: Severe Polytrauma (GCS ${telemetry.gcsScore}/15)`,
+        `HEMODYNAMICS: BP ${telemetry.vitals.bp} | HR ${telemetry.vitals.hr} bpm | SpO2 ${telemetry.vitals.spo2}%`,
+        ...(allergiesList.length ? [`ALLERGY WARNING: Strictly avoid ${allergiesList.join(', ')}`] : []),
+        ...telemetry.injuryTags.map(i => `INJURY DETECTED: ${i}`)
       ],
       esiTriage: {
         level: 1,
@@ -1592,21 +1672,62 @@ export const usePatientStore = create<PatientStore>((set, get) => ({
         badgeBg: 'bg-red-500/10',
         badgeText: 'text-red-700',
         badgeBorder: 'border-red-500/30',
-        rationale: `En-route via 108 Ambulance (ETA ${telemetry.etaMinutes} mins). GCS ${telemetry.gcsScore}, polytrauma with hemodynamic instability. High risk of airway compromise.`,
+        rationale: `En-route via 108 Ambulance (${telemetry.hospitalName}). ETA: ${telemetry.etaMinutes} mins. GCS: ${telemetry.gcsScore}/15, BP: ${telemetry.vitals.bp}, HR: ${telemetry.vitals.hr} bpm, SpO2: ${telemetry.vitals.spo2}%.`,
         immediateActions: telemetry.criticalDirectives?.length ? telemetry.criticalDirectives : [
           'Immediate trauma bay preparation (Bay 1)',
-          'Stat 2 Units O-Negative Uncrossmatched PRBCs',
-          'RSI Intubation tray on bedside',
+          `Stat 2 Units ${victimBlood} PRBCs`,
+          'Bedside FAST Ultrasound & Polytrauma Protocol',
           'Urgent Non-contrast Polytrauma Head/Chest CT'
         ],
-        predictedResources: ['Emergency Resuscitation Bay', 'O-Negative Blood Transfusion', 'Endotracheal Intubation', 'Trauma CT Protocol'],
+        predictedResources: ['Emergency Resuscitation Bay', `Standby PRBC Blood Units (${victimBlood})`, 'Bedside FAST Ultrasound', 'Trauma CT Protocol'],
         algorithmSource: '108-ambulance-telemetry'
       },
-      uploadedDocuments: []
+      structuredSummary: {
+        chiefComplaintSummary: `${victimName} (${victimAge} Yrs, ${victimGender}) — High-speed crash with GCS ${telemetry.gcsScore}/15.`,
+        hpi: `Field paramedic assessment: GCS ${telemetry.gcsScore}/15, Blood Pressure ${telemetry.vitals.bp}, Heart Rate ${telemetry.vitals.hr} bpm, SpO2 ${telemetry.vitals.spo2}%, Respiratory Rate ${telemetry.vitals.rr}. Identified injuries: ${telemetry.injuryTags.join(', ')}. En-route to ${telemetry.hospitalName} with ETA ${telemetry.etaMinutes} mins.`,
+        pastHistory: chronicList.join(', ') || 'No pre-existing chronic conditions noted',
+        medicationsSummary: medsList.join(', ') || 'None reported',
+        allergiesSummary: allergiesList.length ? `ALLERGIES: ${allergiesList.join(', ')}` : 'No known drug allergies',
+        rosSummary: `Vitals measured en-route: BP ${telemetry.vitals.bp}, HR ${telemetry.vitals.hr} bpm, SpO2 ${telemetry.vitals.spo2}%, GCS ${telemetry.gcsScore}/15.`,
+        redFlagsSummary: [
+          `GCS Score: ${telemetry.gcsScore}/15 (${telemetry.gcsScore <= 8 ? 'Comatose / Intubation indicated' : 'Monitored'})`,
+          `Vitals: BP ${telemetry.vitals.bp}, HR ${telemetry.vitals.hr} bpm, SpO2 ${telemetry.vitals.spo2}%`,
+          ...telemetry.injuryTags
+        ],
+        documentHighlights: docImages.length ? [`${docImages.length} live wound / scene photo(s) captured by 108 crew`] : [],
+        suggestedWorkup: [
+          'Immediate Trauma Resuscitation Bay 1 Readiness',
+          `Standby ${victimBlood} PRBC Units`,
+          'Bedside FAST Ultrasound',
+          'Whole-Body Polytrauma CT Protocol'
+        ]
+      },
+      uploadedDocuments: docImages
     };
 
     mockDatabase[token] = traumaPatient;
     syncPatientToSupabase(traumaPatient);
+
+    // Cross-tab broadcast & localStorage persistence
+    broadcastSync({ type: 'AMBULANCE_DISPATCH', telemetry, patient: traumaPatient });
+    broadcastSync({ type: 'PATIENT_SAVED', patient: traumaPatient });
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('medikiosk_p_' + token, JSON.stringify(traumaPatient));
+        localStorage.setItem('medikiosk_latest_ambulance', JSON.stringify(telemetry));
+        localStorage.setItem('medikiosk_latest_patient', JSON.stringify(traumaPatient));
+        const tokens: string[] = JSON.parse(localStorage.getItem('medikiosk_tokens') || '[]');
+        if (!tokens.includes(token)) {
+          tokens.push(token);
+          localStorage.setItem('medikiosk_tokens', JSON.stringify(tokens));
+        }
+      } catch (e) {}
+    }
+
+    // Real-time sync via WebSocket
+    socket.emit('ambulance_dispatch', { telemetry, patient: traumaPatient });
+    socket.emit('patient_intake_submitted', traumaPatient);
+
     get().triggerQueueUpdate();
   },
 

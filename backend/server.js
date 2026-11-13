@@ -107,7 +107,9 @@ io.on('connection', (socket) => {
     });
 
     // 3. 108 Ambulance / Paramedic In-Transit Crash Telemetry
-    socket.on('ambulance_dispatch', (telemetry) => {
+    socket.on('ambulance_dispatch', (data) => {
+        const telemetry = data?.telemetry || data;
+        const patient = data?.patient || null;
         console.log('🚑 In-Transit Ambulance Telemetry from 108 Crew:', telemetry?.telemetryId, 'Target Hospital:', telemetry?.hospitalId);
         const enrichedTelemetry = {
             ...telemetry,
@@ -118,6 +120,10 @@ io.on('connection', (socket) => {
         activeEmergencies.set(telemetry?.victimId || 'active', enrichedTelemetry);
         // Broadcast incoming high-acuity trauma alert to Hospital ER
         io.emit('incoming_ambulance_alert', enrichedTelemetry);
+        if (patient) {
+            io.emit('new_patient_in_queue', patient);
+            io.emit('ambulance_trauma_patient', { telemetry: enrichedTelemetry, patient });
+        }
     });
 
     // 4. Anti-Prank Owner Safety Verification Response

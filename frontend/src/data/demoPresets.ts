@@ -43,6 +43,14 @@ export interface AmbulanceTelemetry {
   victimId: string;
   victimName: string;
   victimPhoto?: string;
+  victimAge?: number | string;
+  victimGender?: string;
+  bloodGroup?: string;
+  abhaId?: string;
+  criticalAllergies?: string[];
+  chronicConditions?: string[];
+  currentMedications?: string[];
+  victimMember?: FamilyMemberProfile | null;
   vehicleTag: string;
   hospitalId: string;
   hospitalName: string;
