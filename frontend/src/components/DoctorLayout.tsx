@@ -89,7 +89,7 @@ export default function DoctorLayout() {
               <span className="font-bold text-slate-800 uppercase tracking-wide">
                 {activeTab === 'consultation' && 'Active Chart & SOAP'}
                 {activeTab === 'queue' && 'OPD Live Queue'}
-                {activeTab === 'emergency' && 'Emergency Trauma Bay'}
+                {activeTab === 'emergency' && 'Emergency / Casualty Hub'}
                 {activeTab === 'ipd' && 'IPD / Admitted Ward'}
               </span>
             </div>

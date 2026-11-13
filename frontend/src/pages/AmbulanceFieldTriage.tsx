@@ -235,7 +235,7 @@ export default function AmbulanceFieldTriage() {
         rr: 20
       },
       criticalDirectives: [
-        'Trauma Bay 1 Resuscitation Readiness',
+        'Emergency Resuscitation Readiness',
         activeMember ? `Standby ${activeMember.bloodGroup} PRBC Units` : 'Standby 2 Units O-Negative PRBCs',
         'Bedside FAST Ultrasound & Polytrauma Protocol'
       ],
@@ -297,7 +297,7 @@ export default function AmbulanceFieldTriage() {
           )}
           <span className="text-[11px] font-mono text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-md font-bold flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-            Trauma Socket Ready
+            Hospital ER Link Active
           </span>
         </div>
       </header>
@@ -905,8 +905,8 @@ export default function AmbulanceFieldTriage() {
                   >
                     <Radio size={16} className={transmitted ? '' : 'animate-ping'} />
                     {transmitted
-                      ? '✓ Telemetry Streamed to Hospital Trauma Bay! (Active)'
-                      : 'Transmit Live Telemetry & Prime Trauma Bay'}
+                      ? '✓ Telemetry Streamed to Hospital ER! (Active)'
+                      : 'Transmit Live Telemetry to Hospital ER'}
                   </button>
 
                   {transmitted && (
@@ -914,9 +914,9 @@ export default function AmbulanceFieldTriage() {
                       <div className="flex items-center gap-2">
                         <CheckCircle2 size={16} className="text-emerald-700 shrink-0" />
                         <div>
-                          <strong className="block">PGIMER Trauma Bay 1 Primed & Standby Units Reserved</strong>
+                          <strong className="block">PGIMER Emergency Department Alerted & Blood Standby Confirmed</strong>
                           <span className="text-[11px] text-emerald-800">
-                            Pre-arrival orders for {activeMember ? activeMember.name : 'Victim'} broadcasted with ETA {etaMinutes} mins.
+                            Pre-arrival emergency orders for {activeMember ? activeMember.name : 'Victim'} broadcasted with ETA {etaMinutes} mins.
                           </span>
                         </div>
                       </div>

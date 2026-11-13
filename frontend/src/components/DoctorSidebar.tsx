@@ -51,7 +51,7 @@ export default function DoctorSidebar({ activeTab, setActiveTab, onLogout }: Doc
     },
     {
       id: 'emergency' as DoctorNavTab,
-      label: 'Trauma Bay Hub',
+      label: 'Emergency / Casualty',
       subtext: incomingAmbulance ? `🚨 AMB En-route (${incomingAmbulance.etaMinutes}m)` : 'High-acuity red flags',
       icon: AlertOctagon,
       badge: incomingAmbulance ? '108 Live' : emergencyCount > 0 ? `${emergencyCount} Critical` : undefined,

@@ -1674,12 +1674,12 @@ export const usePatientStore = create<PatientStore>((set, get) => ({
         badgeBorder: 'border-red-500/30',
         rationale: `En-route via 108 Ambulance (${telemetry.hospitalName}). ETA: ${telemetry.etaMinutes} mins. GCS: ${telemetry.gcsScore}/15, BP: ${telemetry.vitals.bp}, HR: ${telemetry.vitals.hr} bpm, SpO2: ${telemetry.vitals.spo2}%.`,
         immediateActions: telemetry.criticalDirectives?.length ? telemetry.criticalDirectives : [
-          'Immediate trauma bay preparation (Bay 1)',
+          'Emergency casualty bed & resuscitation readiness',
           `Stat 2 Units ${victimBlood} PRBCs`,
           'Bedside FAST Ultrasound & Polytrauma Protocol',
           'Urgent Non-contrast Polytrauma Head/Chest CT'
         ],
-        predictedResources: ['Emergency Resuscitation Bay', `Standby PRBC Blood Units (${victimBlood})`, 'Bedside FAST Ultrasound', 'Trauma CT Protocol'],
+        predictedResources: ['Emergency Resuscitation & Trauma Ward', `Standby PRBC Blood Units (${victimBlood})`, 'Bedside FAST Ultrasound', 'Trauma CT Protocol'],
         algorithmSource: '108-ambulance-telemetry'
       },
       structuredSummary: {
@@ -1696,7 +1696,7 @@ export const usePatientStore = create<PatientStore>((set, get) => ({
         ],
         documentHighlights: docImages.length ? [`${docImages.length} live wound / scene photo(s) captured by 108 crew`] : [],
         suggestedWorkup: [
-          'Immediate Trauma Resuscitation Bay 1 Readiness',
+          'Emergency Resuscitation & Casualty Bed Readiness',
           `Standby ${victimBlood} PRBC Units`,
           'Bedside FAST Ultrasound',
           'Whole-Body Polytrauma CT Protocol'

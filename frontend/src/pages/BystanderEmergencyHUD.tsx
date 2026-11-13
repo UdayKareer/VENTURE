@@ -161,7 +161,7 @@ export default function BystanderEmergencyHUD() {
             <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-600 flex items-start gap-2.5">
               <ShieldAlert size={16} className="text-teal-700 shrink-0 mt-0.5" />
               <div className="text-[11px] leading-relaxed">
-                <strong className="text-slate-900">DPDP Act 2023 & ABDM Protocol:</strong> Access to medical history, ABHA health IDs, and family caller bridge is restricted to verified hospital trauma bays, 108 paramedics, and attending physicians.
+                <strong className="text-slate-900">DPDP Act 2023 & ABDM Protocol:</strong> Access to medical history, ABHA health IDs, and family caller bridge is restricted to verified emergency hospitals, 108 paramedics, and attending physicians.
               </div>
             </div>
 
@@ -470,30 +470,11 @@ export default function BystanderEmergencyHUD() {
                     <Ambulance size={16} className={sosSent ? '' : 'animate-bounce'} />
                     <span>
                       {sosSent
-                        ? '✓ Trauma Beacon Broadcasted to Level-1 Emergency Bay!'
-                        : '🚨 Trigger 108 Ambulance SOS & Hospital Trauma Beacon'}
+                        ? '✓ Emergency Alert Broadcasted to 108 & Hospital Emergency!'
+                        : '🚨 Trigger 108 Ambulance SOS & Hospital Emergency Alert'}
                     </span>
                   </button>
-
-                  {/* Paramedic / Doctor Route Shortcuts */}
-                  <div className="grid grid-cols-2 gap-2 pt-1">
-                    <button
-                      onClick={() => navigate('/paramedic/triage')}
-                      className="py-2.5 px-3 rounded-lg bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-                    >
-                      <Activity size={14} />
-                      <span>108 Triage &rarr;</span>
-                    </button>
-                    <button
-                      onClick={() => navigate('/doctor')}
-                      className="py-2.5 px-3 rounded-lg bg-white hover:bg-slate-100 text-slate-800 font-bold text-xs border border-slate-300 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-                    >
-                      <Stethoscope size={14} className="text-teal-700" />
-                      <span>Doctor Console &rarr;</span>
-                    </button>
-                  </div>
                 </div>
-
               </div>
             )}
 

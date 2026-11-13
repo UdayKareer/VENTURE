@@ -1292,7 +1292,7 @@ export default function DoctorDashboard() {
                 <AlertOctagon size={26} />
               </div>
               <div>
-                <h2 className="text-xl font-black text-slate-900 tracking-tight">Emergency Resuscitation & Triage Bay</h2>
+                <h2 className="text-xl font-black text-slate-900 tracking-tight">Emergency Resuscitation & Casualty Ward</h2>
                 <p className="text-xs text-slate-500">Immediate clinical alerts flagged by MediKiosk Intake System</p>
               </div>
             </div>
@@ -1305,7 +1305,7 @@ export default function DoctorDashboard() {
             {activeQueuePatients.filter(p => p.triageLevel === 'emergency').length === 0 ? (
               <div className="col-span-full py-12 text-center bg-white border border-dashed border-emerald-200 rounded-2xl space-y-2">
                 <ShieldCheck size={32} className="mx-auto text-emerald-600" />
-                <h4 className="font-bold text-slate-800 text-sm">Emergency Bay All Clear</h4>
+                <h4 className="font-bold text-slate-800 text-sm">Emergency Casualty All Clear</h4>
                 <p className="text-xs text-slate-500">No active high-acuity emergency cases pending triage.</p>
               </div>
             ) : (
@@ -2061,7 +2061,7 @@ export default function DoctorDashboard() {
                           }}
                           className="px-3.5 py-2 rounded-xl bg-white text-red-700 font-black text-xs hover:bg-red-50 shadow-md transition-transform active:scale-95 cursor-pointer"
                         >
-                          Prime Bay 1
+                          View Emergency Patient
                         </button>
 
                         <button
@@ -2080,10 +2080,10 @@ export default function DoctorDashboard() {
                     <div className="mb-4 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-900 flex flex-col gap-2">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-black uppercase tracking-wider text-amber-800 flex items-center gap-1.5">
-                          <Radio size={14} className="text-red-600 animate-pulse" /> Pre-Arrival Trauma Directives (Bedside Protocols)
+                          <Radio size={14} className="text-red-600 animate-pulse" /> Pre-Arrival Emergency Protocols (Standing Orders)
                         </span>
                         <span className="text-[10px] font-bold bg-amber-200/80 text-amber-900 px-2 py-0.5 rounded font-mono">
-                          AUTONOMOUS CLINICAL ORDER
+                          ER STANDBY ORDER
                         </span>
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-semibold text-slate-800 pt-1">
@@ -2097,11 +2097,11 @@ export default function DoctorDashboard() {
                         </div>
                         <div className="flex items-center gap-2 p-2 rounded bg-white/80 border border-amber-200">
                           <span className="w-4 h-4 rounded bg-red-600 text-white flex items-center justify-center text-[10px] font-bold">✓</span>
-                          <span>Non-Contrast Head & Polytrauma CT Protocol Primed</span>
+                          <span>Non-Contrast Head & Polytrauma CT Protocol Ordered</span>
                         </div>
                         <div className="flex items-center gap-2 p-2 rounded bg-white/80 border border-amber-200">
                           <span className="w-4 h-4 rounded bg-red-600 text-white flex items-center justify-center text-[10px] font-bold">✓</span>
-                          <span>Trauma Bay 1 Resuscitation Team Alerted</span>
+                          <span>Emergency Trauma Team Alerted</span>
                         </div>
                       </div>
                     </div>
