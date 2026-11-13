@@ -16,7 +16,8 @@ import {
   ChevronRight,
   Eye,
   CheckCircle2,
-  Share2
+  Share2,
+  Ambulance
 } from 'lucide-react';
 import { usePatientStore, type FamilyMemberProfile } from '../store/usePatientStore';
 
@@ -227,6 +228,13 @@ export default function TagStudioView() {
               </button>
 
               <button
+                onClick={() => navigate('/paramedic/triage')}
+                className="w-full py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs transition-all cursor-pointer"
+              >
+                <Ambulance size={15} /> Open 108 Ambulance Field Triage
+              </button>
+
+              <button
                 onClick={handleSimulateNfc}
                 disabled={nfcSimulated}
                 className="w-full py-2 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold border border-slate-200 flex items-center justify-center gap-2 transition-colors cursor-pointer"
@@ -319,9 +327,20 @@ export default function TagStudioView() {
                           {member.relationship}
                         </span>
                       </div>
-                      <span className="text-xs font-black text-red-700 bg-red-50 border border-red-200 px-2 py-0.5 rounded-md font-mono">
-                        {member.bloodGroup}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-black text-red-700 bg-red-50 border border-red-200 px-2 py-0.5 rounded-md font-mono">
+                          {member.bloodGroup}
+                        </span>
+                        <button
+                          onClick={() => navigate(`/paramedic/triage?tagId=${vehicleTag.tagId}&victimId=${member.id}&authed=1`, {
+                            state: { tagId: vehicleTag.tagId, victimId: member.id, authed: true }
+                          })}
+                          className="px-2 py-0.5 rounded bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-[10px] font-bold flex items-center gap-1 transition-colors cursor-pointer shrink-0"
+                          title="Open 108 Ambulance triage for this rider"
+                        >
+                          <Ambulance size={11} /> 108 Triage &rarr;
+                        </button>
+                      </div>
                     </div>
 
                     <div className="text-xs text-slate-500 mt-1 flex items-center gap-3">

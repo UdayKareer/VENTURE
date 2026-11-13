@@ -24,7 +24,8 @@ import {
   Stethoscope,
   Pill,
   Hospital,
-  Shield
+  Shield,
+  Radio
 } from 'lucide-react';
 import { usePatientStore, type FamilyMemberProfile } from '../store/usePatientStore';
 
@@ -303,7 +304,17 @@ export default function BystanderEmergencyHUD() {
                       {isSelected && (
                         <div className="mt-2.5 pt-2 border-t border-teal-200 flex items-center justify-between text-[10px] text-teal-800 font-bold">
                           <span>Active Dossier</span>
-                          <CheckCircle2 size={12} className="text-teal-700" />
+                          <span
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/paramedic/triage?tagId=${vehicleTag.tagId}&victimId=${member.id}&authed=1`, {
+                                state: { tagId: vehicleTag.tagId, victimId: member.id, authed: true }
+                              });
+                            }}
+                            className="bg-red-600 hover:bg-red-700 text-white px-2 py-0.5 rounded font-sans cursor-pointer flex items-center gap-1 shadow-2xs"
+                          >
+                            <Ambulance size={11} /> Open Ambulance &rarr;
+                          </span>
                         </div>
                       )}
                     </button>
@@ -326,6 +337,37 @@ export default function BystanderEmergencyHUD() {
                 <span>Victim is an Unregistered Borrower (Lent Vehicle)</span>
               </button>
             </div>
+
+            {/* Quick Action Banner: Open 108 Ambulance Triage Portal with selected patient */}
+            {(selectedMember || isGuestRider) && (
+              <div className="bg-red-50 border border-red-200 rounded-xl p-3.5 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xs">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-lg bg-red-600 text-white flex items-center justify-center font-bold shrink-0 shadow-xs">
+                    <Ambulance size={18} />
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-slate-900 block">
+                      108 Paramedic Action: Active Victim Selected
+                    </span>
+                    <span className="text-[11px] text-slate-600 block">
+                      Transfer <strong className="text-red-700">{isGuestRider ? 'Unregistered Borrower' : selectedMember?.name}</strong> to live 108 triage console.
+                    </span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    const victimParam = isGuestRider ? 'guest-rider' : selectedMember?.id;
+                    navigate(`/paramedic/triage?tagId=${vehicleTag.tagId}&victimId=${victimParam}&authed=1`, {
+                      state: { tagId: vehicleTag.tagId, victimId: victimParam, authed: true, isGuest: isGuestRider }
+                    });
+                  }}
+                  className="w-full sm:w-auto px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-lg shadow-xs flex items-center justify-center gap-2 transition-all cursor-pointer shrink-0"
+                >
+                  <Activity size={14} />
+                  <span>Open 108 Ambulance Portal &rarr;</span>
+                </button>
+              </div>
+            )}
 
             {/* Unlocked Clinical Dossier of Selected Patient */}
             {selectedMember && !isGuestRider && (
@@ -444,11 +486,24 @@ export default function BystanderEmergencyHUD() {
                   </div>
                 )}
 
-                {/* Verified Responder Family Caller & SOS Actions */}
+                {/* Verified Responder Family Caller, Ambulance Portal & SOS Actions */}
                 <div className="pt-2 flex flex-col gap-2.5 border-t border-slate-100">
                   <button
+                    onClick={() => {
+                      const victimParam = isGuestRider ? 'guest-rider' : selectedMember?.id;
+                      navigate(`/paramedic/triage?tagId=${vehicleTag.tagId}&victimId=${victimParam}&authed=1`, {
+                        state: { tagId: vehicleTag.tagId, victimId: victimParam, authed: true, isGuest: isGuestRider }
+                      });
+                    }}
+                    className="w-full py-3 px-4 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs transition-all cursor-pointer"
+                  >
+                    <Ambulance size={16} />
+                    <span>Open 108 Ambulance Triage Portal for {selectedMember ? selectedMember.name : 'Victim'} &rarr;</span>
+                  </button>
+
+                  <button
                     onClick={handleCallEmergencyContact}
-                    className="w-full py-3 px-4 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs transition-all cursor-pointer"
+                    className="w-full py-2.5 px-4 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs transition-all cursor-pointer"
                   >
                     <PhoneCall size={15} />
                     <span>
@@ -461,13 +516,13 @@ export default function BystanderEmergencyHUD() {
                   <button
                     onClick={handleTriggerSOS}
                     disabled={sosSent}
-                    className={`w-full py-3 px-4 rounded-lg font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                    className={`w-full py-2.5 px-4 rounded-lg font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${
                       sosSent
                         ? 'bg-emerald-800 text-white cursor-default'
-                        : 'bg-red-600 hover:bg-red-700 text-white shadow-xs'
+                        : 'bg-slate-800 hover:bg-slate-900 text-white shadow-xs'
                     }`}
                   >
-                    <Ambulance size={16} className={sosSent ? '' : 'animate-bounce'} />
+                    <Radio size={15} className={sosSent ? '' : 'text-red-400 animate-pulse'} />
                     <span>
                       {sosSent
                         ? '✓ Emergency Alert Broadcasted to 108 & Hospital Emergency!'

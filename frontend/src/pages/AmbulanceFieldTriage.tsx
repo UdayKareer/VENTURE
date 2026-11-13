@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Ambulance,
   Camera,
@@ -34,30 +34,67 @@ import { usePatientStore, type AmbulanceTelemetry, type FamilyMemberProfile } fr
 
 export default function AmbulanceFieldTriage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { vehicleTag, dispatchAmbulanceTelemetry } = usePatientStore();
+
+  const queryParams = new URLSearchParams(location.search);
+  const paramTag = location.state?.tagId || queryParams.get('tagId') || '';
+  const paramVictim = location.state?.victimId || queryParams.get('victimId') || '';
+  const isPreAuthed = location.state?.authed === true || queryParams.get('authed') === '1';
+  const isGuestParam = location.state?.isGuest === true || queryParams.get('guest') === '1' || paramVictim === 'guest-rider';
 
   // Triage Phase Workflow:
   // Phase 1: 'scan' -> Paramedic scans crash QR tag on vehicle/helmet
   // Phase 2: 'auth' -> Paramedic enters official hospital passcode (108)
   // Phase 3: 'triage' -> Active in-transit triage, vitals & streaming to trauma bay
-  const [triageStep, setTriageStep] = useState<'scan' | 'auth' | 'triage'>('scan');
+  // If arrived with pre-authed victim from emergency HUD, jump straight to 'triage'!
+  const [triageStep, setTriageStep] = useState<'scan' | 'auth' | 'triage'>(() => {
+    if (paramVictim || (isPreAuthed && paramTag)) return 'triage';
+    if (paramTag) return 'auth';
+    return 'scan';
+  });
 
   // Scanner state
-  const [scannedTagId, setScannedTagId] = useState('');
+  const [scannedTagId, setScannedTagId] = useState(paramTag || (paramVictim ? vehicleTag.tagId : ''));
   const [manualTagInput, setManualTagInput] = useState('');
   const [isScanning, setIsScanning] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   // Authentication state
-  const [passcode, setPasscode] = useState('');
+  const [passcode, setPasscode] = useState(isPreAuthed ? '108' : '');
   const [authError, setAuthError] = useState('');
 
   // Selected victim in this incident
-  const [selectedVictimId, setSelectedVictimId] = useState<string | null>(null);
-  const [isGuestVictim, setIsGuestVictim] = useState(false);
+  const [selectedVictimId, setSelectedVictimId] = useState<string | null>(() => {
+    if (isGuestParam) return null;
+    if (paramVictim) return paramVictim;
+    return null;
+  });
+  const [isGuestVictim, setIsGuestVictim] = useState(isGuestParam);
   const [guestName, setGuestName] = useState('');
 
   const activeMember = vehicleTag.members.find((m) => m.id === selectedVictimId) || null;
+
+  // React to dynamic route updates
+  useEffect(() => {
+    const q = new URLSearchParams(location.search);
+    const vId = location.state?.victimId || q.get('victimId');
+    const tId = location.state?.tagId || q.get('tagId');
+    const authed = location.state?.authed === true || q.get('authed') === '1';
+    const guest = location.state?.isGuest === true || q.get('guest') === '1' || vId === 'guest-rider';
+
+    if (vId || authed) {
+      if (tId) setScannedTagId(tId);
+      if (guest) {
+        setIsGuestVictim(true);
+        setSelectedVictimId(null);
+      } else if (vId) {
+        setSelectedVictimId(vId);
+        setIsGuestVictim(false);
+      }
+      setTriageStep('triage');
+    }
+  }, [location.search, location.state]);
 
   // In-Transit Field Vitals (Clean / empty by default)
   const [gcs, setGcs] = useState<number | ''>('');
