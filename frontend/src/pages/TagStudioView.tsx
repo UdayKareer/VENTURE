@@ -100,39 +100,30 @@ export default function TagStudioView() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
-      {/* Top Header */}
-      <header className="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md px-6 py-4 flex items-center justify-between sticky top-0 z-30">
+    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans">
+      {/* Top Header - Clean Institutional White */}
+      <header className="border-b border-slate-200 bg-white px-6 py-4 flex items-center justify-between sticky top-0 z-30 shadow-xs">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-400 flex items-center justify-center text-slate-950 font-black shadow-lg shadow-amber-500/20">
+          <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center text-slate-950 font-black shadow-xs">
             <QrCode size={22} strokeWidth={2.5} />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-lg font-bold text-white tracking-tight">PingME Tag Studio</h1>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30 uppercase tracking-widest">
-                Phygital Vault
+              <h1 className="text-base font-bold text-slate-900 tracking-tight">PingME Tag Studio</h1>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 uppercase tracking-widest font-mono">
+                Decal Generator
               </span>
             </div>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-500">
               Vehicle & Helmet QR Decal Generator with ABHA Emergency Identity
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => navigate('/doctor')}
-            className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition-colors flex items-center gap-1.5"
-          >
-            Doctor Dashboard <ChevronRight size={14} />
-          </button>
-          <button
-            onClick={() => navigate('/hospital/checkin')}
-            className="px-3 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold shadow-xs transition-colors flex items-center gap-1.5"
-          >
-            Hospital Entry QR <ChevronRight size={14} />
-          </button>
+        <div className="flex items-center gap-2 text-xs font-mono text-slate-500">
+          <span className="px-2.5 py-1 rounded-md bg-slate-100 border border-slate-200">
+            Decal Spec: 3M Retro-Reflective Class 1
+          </span>
         </div>
       </header>
 
@@ -141,26 +132,26 @@ export default function TagStudioView() {
         
         {/* Left Column: Physical Sticker Preview & Live Scanners (5 cols) */}
         <div className="lg:col-span-5 flex flex-col gap-6">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col items-center">
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs flex flex-col items-center">
             
             {/* Decal Type Switcher */}
-            <div className="w-full flex rounded-xl bg-slate-950 p-1 border border-slate-800 mb-6">
+            <div className="w-full flex rounded-xl bg-slate-100 p-1 border border-slate-200 mb-6">
               <button
                 onClick={() => setSelectedTagType('helmet')}
-                className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
+                className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                   selectedTagType === 'helmet'
-                    ? 'bg-amber-500 text-slate-950 shadow-md'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-white text-slate-900 shadow-xs border border-slate-200'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 Helmet Decal (50mm Round)
               </button>
               <button
                 onClick={() => setSelectedTagType('windshield')}
-                className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
+                className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                   selectedTagType === 'windshield'
-                    ? 'bg-amber-500 text-slate-950 shadow-md'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-white text-slate-900 shadow-xs border border-slate-200'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 Windshield Tag (80x45mm)
@@ -169,7 +160,7 @@ export default function TagStudioView() {
 
             {/* Physical Sticker Visualization (High-density 3M Reflective styling) */}
             {selectedTagType === 'helmet' ? (
-              <div className="relative w-64 h-64 rounded-full border-4 border-amber-500/80 bg-gradient-to-br from-slate-900 via-slate-950 to-black p-4 flex flex-col items-center justify-center shadow-2xl shadow-amber-500/10 group">
+              <div className="relative w-64 h-64 rounded-full border-4 border-amber-500/80 bg-gradient-to-br from-slate-900 via-slate-950 to-black p-4 flex flex-col items-center justify-center shadow-xl group">
                 <div className="absolute inset-1 rounded-full border border-dashed border-amber-400/40 pointer-events-none" />
                 
                 {/* PingME Brand Badge */}
@@ -196,7 +187,7 @@ export default function TagStudioView() {
                 </div>
               </div>
             ) : (
-              <div className="relative w-80 h-48 rounded-2xl border-2 border-amber-500/80 bg-gradient-to-br from-slate-900 via-slate-950 to-black p-4 flex items-center justify-between shadow-2xl shadow-amber-500/10">
+              <div className="relative w-80 h-48 rounded-2xl border-2 border-amber-500/80 bg-gradient-to-br from-slate-900 via-slate-950 to-black p-4 flex items-center justify-between shadow-xl">
                 <div className="flex-1 pr-3 flex flex-col justify-between h-full">
                   <div>
                     <div className="flex items-center gap-1.5 text-amber-400 text-xs font-black uppercase tracking-wider">
@@ -211,7 +202,7 @@ export default function TagStudioView() {
                   </div>
 
                   <div className="text-[9px] text-slate-400 leading-tight">
-                    Sec. 134A Motor Vehicles Act Protected.<br />
+                    Emergency Clinical Vault.<br />
                     Linked with Ayushman Bharat (ABHA).
                   </div>
                 </div>
@@ -230,7 +221,7 @@ export default function TagStudioView() {
             <div className="w-full mt-6 space-y-2">
               <button
                 onClick={() => navigate(`/emergency/${vehicleTag.tagId}`)}
-                className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 transition-all cursor-pointer"
+                className="w-full py-2.5 px-4 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs transition-all cursor-pointer"
               >
                 <Eye size={15} /> Open Bystander Emergency HUD
               </button>
@@ -238,9 +229,9 @@ export default function TagStudioView() {
               <button
                 onClick={handleSimulateNfc}
                 disabled={nfcSimulated}
-                className="w-full py-2 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                className="w-full py-2 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold border border-slate-200 flex items-center justify-center gap-2 transition-colors cursor-pointer"
               >
-                <Radio size={14} className={nfcSimulated ? 'animate-ping text-amber-400' : 'text-slate-400'} />
+                <Radio size={14} className={nfcSimulated ? 'animate-ping text-amber-600' : 'text-slate-500'} />
                 {nfcSimulated ? 'NFC Handshake Connected! Opening HUD...' : 'Simulate 1-Tap Smartphone NFC Tap'}
               </button>
             </div>
@@ -255,51 +246,51 @@ export default function TagStudioView() {
         <div className="lg:col-span-7 flex flex-col gap-6">
           
           {/* Vehicle Metadata Card */}
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+          <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
               <div className="flex items-center gap-2.5">
-                <Bike className="text-amber-400" size={20} />
-                <h2 className="text-sm font-bold text-white uppercase tracking-wider">
+                <Bike className="text-amber-600" size={20} />
+                <h2 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
                   Registered Vehicle Profile
                 </h2>
               </div>
-              <span className="text-xs font-mono font-bold bg-slate-800 text-amber-400 px-2.5 py-1 rounded-md border border-slate-700">
+              <span className="text-xs font-mono font-bold bg-slate-100 text-slate-800 px-2.5 py-1 rounded-md border border-slate-200">
                 {vehicleTag.tagId}
               </span>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-xs">
               <div>
-                <span className="text-slate-500 block mb-0.5">Registration Number</span>
-                <span className="font-bold text-white font-mono">{vehicleTag.regNumber}</span>
+                <span className="text-slate-400 block mb-0.5">Registration Number</span>
+                <span className="font-bold text-slate-900 font-mono">{vehicleTag.regNumber}</span>
               </div>
               <div>
-                <span className="text-slate-500 block mb-0.5">Vehicle Model</span>
-                <span className="font-semibold text-slate-300">{vehicleTag.vehicleModel}</span>
+                <span className="text-slate-400 block mb-0.5">Vehicle Model</span>
+                <span className="font-semibold text-slate-700">{vehicleTag.vehicleModel}</span>
               </div>
               <div>
-                <span className="text-slate-500 block mb-0.5">Primary Rider</span>
-                <span className="font-semibold text-slate-300">{vehicleTag.registeredOwner}</span>
+                <span className="text-slate-400 block mb-0.5">Primary Rider</span>
+                <span className="font-semibold text-slate-700">{vehicleTag.registeredOwner}</span>
               </div>
             </div>
           </div>
 
           {/* Registered Co-Travelers List */}
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-lg flex-1 flex flex-col">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs flex-1 flex flex-col">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">
               <div>
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <Users size={16} className="text-amber-400" />
+                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                  <Users size={16} className="text-teal-700" />
                   Family Co-Travelers with Photographs
                 </h3>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <p className="text-xs text-slate-500 mt-0.5">
                   Photographs allow accident bystanders & first responders to visually confirm the injured rider.
                 </p>
               </div>
 
               <button
                 onClick={() => setShowAddMember(true)}
-                className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                className="px-3 py-1.5 rounded-lg bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
               >
                 <Plus size={14} /> Add Co-Traveler
               </button>
@@ -310,30 +301,30 @@ export default function TagStudioView() {
               {vehicleTag.members.map((member) => (
                 <div
                   key={member.id}
-                  className="p-4 rounded-xl bg-slate-950 border border-slate-800/80 hover:border-slate-700 transition-all flex items-start gap-4"
+                  className="p-4 rounded-xl bg-slate-50 border border-slate-200 hover:border-slate-300 transition-all flex items-start gap-4"
                 >
                   {/* Photo */}
                   <img
                     src={member.photoUrl}
                     alt={member.name}
-                    className="w-14 h-14 rounded-xl object-cover border-2 border-slate-800 shrink-0"
+                    className="w-14 h-14 rounded-xl object-cover border border-slate-200 shrink-0"
                   />
 
                   {/* Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
-                        <h4 className="text-sm font-bold text-white">{member.name}</h4>
-                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 border border-slate-700">
+                        <h4 className="text-sm font-bold text-slate-900">{member.name}</h4>
+                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-white text-slate-700 border border-slate-200">
                           {member.relationship}
                         </span>
                       </div>
-                      <span className="text-xs font-black text-red-400 bg-red-500/10 border border-red-500/20 px-2 py-0.5 rounded-md">
+                      <span className="text-xs font-black text-red-700 bg-red-50 border border-red-200 px-2 py-0.5 rounded-md font-mono">
                         {member.bloodGroup}
                       </span>
                     </div>
 
-                    <div className="text-xs text-slate-400 mt-1 flex items-center gap-3">
+                    <div className="text-xs text-slate-500 mt-1 flex items-center gap-3">
                       <span>Age: {member.age} ({member.gender})</span>
                       <span>•</span>
                       <span className="font-mono text-[11px]">ABHA: {member.abhaId}</span>
@@ -344,7 +335,7 @@ export default function TagStudioView() {
                       {member.criticalAllergies.map((all, i) => (
                         <span
                           key={i}
-                          className="text-[10px] font-medium bg-red-950/60 text-red-300 border border-red-800/50 px-2 py-0.5 rounded-md flex items-center gap-1"
+                          className="text-[10px] font-medium bg-red-50 text-red-800 border border-red-200 px-2 py-0.5 rounded-md flex items-center gap-1 font-semibold"
                         >
                           <AlertTriangle size={10} /> {all}
                         </span>
@@ -353,7 +344,7 @@ export default function TagStudioView() {
                       {member.chronicConditions.map((cond, i) => (
                         <span
                           key={i}
-                          className="text-[10px] font-medium bg-slate-800 text-slate-300 border border-slate-700 px-2 py-0.5 rounded-md"
+                          className="text-[10px] font-medium bg-white text-slate-700 border border-slate-200 px-2 py-0.5 rounded-md"
                         >
                           {cond}
                         </span>
@@ -366,15 +357,15 @@ export default function TagStudioView() {
 
             {/* Add Member Modal */}
             {showAddMember && (
-              <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
-                <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl">
-                  <h3 className="text-base font-bold text-white mb-4">
+              <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+                <div className="bg-white border border-slate-200 rounded-2xl max-w-md w-full p-6 shadow-2xl">
+                  <h3 className="text-base font-bold text-slate-900 mb-4">
                     Register New Family Co-Traveler
                   </h3>
 
                   <form onSubmit={handleAddMember} className="space-y-4">
                     <div>
-                      <label className="text-xs font-semibold text-slate-400 block mb-1">
+                      <label className="text-xs font-semibold text-slate-600 block mb-1">
                         Full Name
                       </label>
                       <input
@@ -383,19 +374,19 @@ export default function TagStudioView() {
                         value={newMember.name}
                         onChange={(e) => setNewMember({ ...newMember, name: e.target.value })}
                         placeholder="e.g. Priya Verma"
-                        className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500"
+                        className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:bg-white focus:outline-none focus:border-teal-600"
                       />
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="text-xs font-semibold text-slate-400 block mb-1">
+                        <label className="text-xs font-semibold text-slate-600 block mb-1">
                           Relationship
                         </label>
                         <select
                           value={newMember.relationship}
                           onChange={(e) => setNewMember({ ...newMember, relationship: e.target.value as any })}
-                          className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white"
+                          className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:bg-white"
                         >
                           <option value="Self">Self</option>
                           <option value="Spouse">Spouse</option>
@@ -406,13 +397,13 @@ export default function TagStudioView() {
                       </div>
 
                       <div>
-                        <label className="text-xs font-semibold text-slate-400 block mb-1">
+                        <label className="text-xs font-semibold text-slate-600 block mb-1">
                           Blood Group
                         </label>
                         <select
                           value={newMember.bloodGroup}
                           onChange={(e) => setNewMember({ ...newMember, bloodGroup: e.target.value as any })}
-                          className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-bold text-red-400"
+                          className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-xs text-red-700 font-bold focus:bg-white"
                         >
                           <option value="O+">O+</option>
                           <option value="O-">O-</option>
@@ -428,20 +419,20 @@ export default function TagStudioView() {
 
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="text-xs font-semibold text-slate-400 block mb-1">Age</label>
+                        <label className="text-xs font-semibold text-slate-600 block mb-1">Age</label>
                         <input
                           type="number"
                           value={newMember.age}
                           onChange={(e) => setNewMember({ ...newMember, age: Number(e.target.value) })}
-                          className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white"
+                          className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:bg-white"
                         />
                       </div>
                       <div>
-                        <label className="text-xs font-semibold text-slate-400 block mb-1">Gender</label>
+                        <label className="text-xs font-semibold text-slate-600 block mb-1">Gender</label>
                         <select
                           value={newMember.gender}
                           onChange={(e) => setNewMember({ ...newMember, gender: e.target.value as any })}
-                          className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white"
+                          className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:bg-white"
                         >
                           <option value="Male">Male</option>
                           <option value="Female">Female</option>
@@ -450,17 +441,17 @@ export default function TagStudioView() {
                       </div>
                     </div>
 
-                    <div className="flex justify-end gap-2 pt-3 border-t border-slate-800">
+                    <div className="flex justify-end gap-2 pt-3 border-t border-slate-200">
                       <button
                         type="button"
                         onClick={() => setShowAddMember(false)}
-                        className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold"
+                        className="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold cursor-pointer"
                       >
                         Cancel
                       </button>
                       <button
                         type="submit"
-                        className="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold"
+                        className="px-4 py-2 rounded-lg bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold cursor-pointer"
                       >
                         Save Co-Traveler
                       </button>
