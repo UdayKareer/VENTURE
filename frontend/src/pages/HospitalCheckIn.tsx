@@ -11,7 +11,9 @@ import {
   Stethoscope,
   Sparkles,
   AlertCircle,
-  FileText
+  FileText,
+  Activity,
+  ArrowRight
 } from 'lucide-react';
 import { usePatientStore, type FamilyMemberProfile, type PatientData } from '../store/usePatientStore';
 
@@ -20,67 +22,100 @@ export default function HospitalCheckIn() {
   const { vehicleTag, checkInFamilyMemberAsOPD } = usePatientStore();
 
   const [selectedMember, setSelectedMember] = useState<FamilyMemberProfile>(vehicleTag.members[0]);
-  const [complaint, setComplaint] = useState('High fever with chills and productive cough for 3 days');
-  const [severity, setSeverity] = useState(6);
+  const [department, setDepartment] = useState('General Medicine');
+  const [visitReason, setVisitReason] = useState('Follow-up Consultation & Routine Prescription Review');
   const [generatedPatient, setGeneratedPatient] = useState<PatientData | null>(null);
 
-  const presetComplaints = [
-    'High fever with chills and productive cough for 3 days',
-    'Severe acute retrosternal chest pain with left arm radiation',
-    'Right knee severe swelling and joint stiffness after walking',
-    'Acute dyspepsia, burning epigastric pain and nausea after meals',
-    'Shortness of breath, acute wheezing and tightness in chest'
+  const departments = [
+    'General Medicine',
+    'Cardiology OPD',
+    'Orthopedics & Joint Care',
+    'Pulmonology & Chest',
+    'Pediatrics OPD',
+    'General Surgery OPD',
+    'Dermatology'
+  ];
+
+  const quickReasons = [
+    'Follow-up Consultation & Routine Prescription Review',
+    'Acute High Fever, Chills & Persistent Cough',
+    'Hypertension & Glycemic Control Checkup',
+    'Diagnostic Lab / ECG Report Consultation',
+    'Joint Pain, Stiffness & Mobility Review'
   ];
 
   const handleCheckIn = (e: React.FormEvent) => {
     e.preventDefault();
-    const p = checkInFamilyMemberAsOPD(selectedMember, complaint, severity);
+    const complaintText = `[${department}] ${visitReason}`;
+    const p = checkInFamilyMemberAsOPD(selectedMember, complaintText, 3);
     setGeneratedPatient(p);
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-start font-sans pb-16">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-start font-sans pb-16 selection:bg-teal-500/30">
       
-      {/* Hospital Gateway Banner */}
-      <div className="w-full bg-teal-600 px-4 py-3 text-white text-center shadow-md sticky top-0 z-40 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Building2 size={18} />
-          <span className="text-xs font-black tracking-wider uppercase">
-            Hospital Entrance QR Check-In • Fast-Track OPD
+      {/* Hospital Gateway Top Header */}
+      <header className="w-full bg-slate-900 border-b border-slate-800 px-4 py-3 sticky top-0 z-40 shadow-md">
+        <div className="max-w-xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg bg-teal-600 flex items-center justify-center text-white font-bold shadow-xs">
+              <Building2 size={16} />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-white tracking-tight uppercase">Hospital Fast-Track Entry</span>
+                <span className="text-[10px] font-mono font-semibold px-1.5 py-0.2 rounded bg-teal-500/10 text-teal-400 border border-teal-500/20">
+                  QR Token Desk
+                </span>
+              </div>
+              <p className="text-[10px] text-slate-400">PGIMER Apex OPD Facility • Chandigarh</p>
+            </div>
+          </div>
+
+          <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded">
+            Average Wait: 12m
           </span>
         </div>
-        <span className="text-[10px] bg-teal-800/80 px-2 py-0.5 rounded font-bold">
-          Central Hospital Portal
-        </span>
-      </div>
+      </header>
 
-      <div className="max-w-md w-full px-4 pt-4 flex flex-col gap-4">
+      <main className="max-w-xl w-full px-4 pt-4 flex flex-col gap-4">
         
-        {/* Welcome & Time-Saving Value Card */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
-          <h2 className="text-sm font-bold text-white flex items-center gap-2">
-            <Sparkles size={16} className="text-teal-400" />
-            1-Tap OPD Check-In with PingME
-          </h2>
-          <p className="text-xs text-slate-400 mt-1">
-            Skip the 45-minute manual registration line. Your ABHA ID, past hospital prescriptions, and clinical history are linked automatically.
-          </p>
+        {/* Value Prop Banner */}
+        <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm flex items-start gap-3">
+          <div className="p-2 rounded-lg bg-teal-500/15 text-teal-400 shrink-0 mt-0.5">
+            <Sparkles size={18} />
+          </div>
+          <div>
+            <h2 className="text-xs font-bold text-white uppercase tracking-wider">
+              1-Tap OPD Fast-Track Check-In
+            </h2>
+            <p className="text-[11px] text-slate-400 leading-relaxed mt-1">
+              Skip the manual registration counter. Your ABHA ID, past hospital prescriptions, and doctor records link instantly to the consulting physician.
+            </p>
+          </div>
         </div>
 
         {!generatedPatient ? (
           <form onSubmit={handleCheckIn} className="flex flex-col gap-4">
             
-            {/* Step 1: Select Who is Consulting Today */}
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-xs font-bold text-white flex items-center gap-1.5 uppercase tracking-wider">
-                  <Users size={15} className="text-teal-400" />
-                  1. Select Consulting Patient
+            {/* Step 1: Select Consulting Patient */}
+            <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm">
+              <div className="flex items-center justify-between mb-3 border-b border-slate-800 pb-2.5">
+                <div>
+                  <span className="text-xs font-bold text-white flex items-center gap-1.5 uppercase tracking-wider">
+                    <Users size={14} className="text-teal-400" />
+                    1. Select Consulting Patient
+                  </span>
+                  <p className="text-[11px] text-slate-400 mt-0.5">
+                    Choose from your registered family profiles:
+                  </p>
+                </div>
+                <span className="text-[10px] font-mono text-teal-400 bg-teal-500/10 px-2 py-0.5 rounded border border-teal-500/20">
+                  {vehicleTag.members.length} Available
                 </span>
-                <span className="text-[10px] text-teal-400 font-semibold">Saved Family Profiles</span>
               </div>
 
-              <div className="grid grid-cols-3 gap-2.5">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                 {vehicleTag.members.map((member) => {
                   const isSelected = selectedMember.id === member.id;
                   return (
@@ -88,141 +123,186 @@ export default function HospitalCheckIn() {
                       type="button"
                       key={member.id}
                       onClick={() => setSelectedMember(member)}
-                      className={`p-2 rounded-xl border flex flex-col items-center text-center transition-all cursor-pointer ${
+                      className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
                         isSelected
-                          ? 'border-teal-500 bg-teal-500/15 shadow-md shadow-teal-500/20'
-                          : 'border-slate-800 bg-slate-950 opacity-75 hover:opacity-100'
+                          ? 'border-teal-500 bg-teal-500/10 shadow-sm ring-1 ring-teal-500/40'
+                          : 'border-slate-800 bg-slate-950/70 hover:bg-slate-950 hover:border-slate-700 opacity-80 hover:opacity-100'
                       }`}
                     >
-                      <img
-                        src={member.photoUrl}
-                        alt={member.name}
-                        className="w-12 h-12 rounded-lg object-cover mb-1 border border-slate-700"
-                      />
-                      <span className="text-xs font-bold text-white truncate w-full">
-                        {member.name.split(' ')[0]}
-                      </span>
-                      <span className="text-[9px] text-slate-400">{member.relationship}</span>
-                      <span className="text-[10px] font-mono text-teal-300 mt-0.5">
-                        {member.bloodGroup}
-                      </span>
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={member.photoUrl}
+                          alt={member.name}
+                          className="w-11 h-11 rounded-lg object-cover shrink-0 border border-slate-700"
+                        />
+                        <div className="min-w-0 flex-1">
+                          <span className="text-xs font-bold text-white truncate block">{member.name}</span>
+                          <span className="text-[10px] text-slate-400 block">{member.relationship} • {member.age}y</span>
+                          <span className="text-[10px] font-mono text-teal-400 font-semibold block mt-0.5">
+                            {member.bloodGroup}
+                          </span>
+                        </div>
+                      </div>
+
+                      {isSelected && (
+                        <div className="mt-2.5 pt-2 border-t border-teal-500/20 flex items-center justify-between text-[10px] text-teal-300 font-semibold">
+                          <span>Selected</span>
+                          <CheckCircle2 size={12} className="text-teal-400" />
+                        </div>
+                      )}
                     </button>
                   );
                 })}
               </div>
 
-              <div className="mt-3 p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-[11px] text-slate-400">
-                <div className="flex items-center justify-between text-white font-semibold mb-1">
-                  <span>Selected: {selectedMember.name} (Age {selectedMember.age})</span>
+              {/* Patient Health Summary Card */}
+              <div className="mt-3 p-3 rounded-xl bg-slate-950/90 border border-slate-800 text-[11px] text-slate-400 flex flex-col gap-1.5">
+                <div className="flex items-center justify-between text-white font-semibold">
+                  <span>{selectedMember.name} • {selectedMember.gender}, {selectedMember.age}y</span>
                   <span className="text-teal-400 font-mono text-[10px]">ABHA: {selectedMember.abhaId}</span>
                 </div>
-                <div>Known Allergies: <strong className="text-red-400">{selectedMember.criticalAllergies.join(', ') || 'None'}</strong></div>
-                <div>Past Hospital Visits: <strong className="text-slate-300">{selectedMember.pastVisits.length} Records on File</strong></div>
-              </div>
-            </div>
-
-            {/* Step 2: What is the Complaint Today? */}
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
-              <span className="text-xs font-bold text-white flex items-center gap-1.5 uppercase tracking-wider mb-2 block">
-                <Stethoscope size={15} className="text-teal-400" />
-                2. Reason for Today's Visit
-              </span>
-
-              <textarea
-                rows={3}
-                required
-                value={complaint}
-                onChange={(e) => setComplaint(e.target.value)}
-                placeholder="Describe symptoms, duration and location..."
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-teal-500"
-              />
-
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                {presetComplaints.map((preset, i) => (
-                  <button
-                    type="button"
-                    key={i}
-                    onClick={() => setComplaint(preset)}
-                    className="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded-md border border-slate-700 transition-colors text-left"
-                  >
-                    + {preset.slice(0, 32)}...
-                  </button>
-                ))}
-              </div>
-
-              {/* Severity Slider */}
-              <div className="mt-4 pt-3 border-t border-slate-800">
-                <div className="flex items-center justify-between text-xs mb-1.5">
-                  <span className="text-slate-400 font-semibold">Symptom Discomfort / Pain Level:</span>
-                  <span className="font-bold text-teal-400 font-mono text-sm">{severity} / 10</span>
+                <div className="text-[10px]">
+                  Allergies: <span className="text-rose-400 font-semibold">{selectedMember.criticalAllergies.join(', ') || 'No known allergies'}</span>
                 </div>
-                <input
-                  type="range"
-                  min="1"
-                  max="10"
-                  value={severity}
-                  onChange={(e) => setSeverity(Number(e.target.value))}
-                  className="w-full accent-teal-500"
-                />
+                <div className="text-[10px]">
+                  Chronic History: <span className="text-slate-300">{selectedMember.chronicConditions.join(', ') || 'None recorded'}</span>
+                </div>
               </div>
             </div>
 
-            {/* Submit Button */}
+            {/* Step 2: Select Specialty & Purpose */}
+            <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm flex flex-col gap-3.5">
+              <div>
+                <span className="text-xs font-bold text-white flex items-center gap-1.5 uppercase tracking-wider">
+                  <Stethoscope size={14} className="text-teal-400" />
+                  2. Select Department & Specialty
+                </span>
+                <p className="text-[11px] text-slate-400 mt-0.5">
+                  Choose the clinic department you are visiting today:
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {departments.map((dept) => {
+                  const isSelected = department === dept;
+                  return (
+                    <button
+                      type="button"
+                      key={dept}
+                      onClick={() => setDepartment(dept)}
+                      className={`py-2 px-2.5 rounded-lg border text-left text-xs font-semibold transition-all cursor-pointer truncate ${
+                        isSelected
+                          ? 'border-teal-500 bg-teal-500/15 text-teal-300 shadow-xs'
+                          : 'border-slate-800 bg-slate-950 text-slate-400 hover:text-white hover:border-slate-700'
+                      }`}
+                    >
+                      {dept}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="pt-2 border-t border-slate-800">
+                <span className="text-[11px] font-bold text-slate-300 uppercase tracking-wider block mb-2">
+                  Visit Purpose (Quick Select):
+                </span>
+                <div className="flex flex-col gap-1.5">
+                  {quickReasons.map((reason, i) => {
+                    const isSelected = visitReason === reason;
+                    return (
+                      <button
+                        type="button"
+                        key={i}
+                        onClick={() => setVisitReason(reason)}
+                        className={`py-2 px-3 rounded-lg border text-left text-xs transition-all cursor-pointer flex items-center justify-between ${
+                          isSelected
+                            ? 'border-teal-500/50 bg-teal-500/10 text-white font-medium'
+                            : 'border-slate-800 bg-slate-950/70 text-slate-400 hover:text-slate-200'
+                        }`}
+                      >
+                        <span className="truncate">{reason}</span>
+                        {isSelected && <CheckCircle2 size={13} className="text-teal-400 shrink-0 ml-2" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Submit Action */}
             <button
               type="submit"
-              className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-400 hover:to-teal-500 text-slate-950 font-black text-sm shadow-xl shadow-teal-500/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
+              className="w-full py-3.5 px-4 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs shadow-md shadow-teal-600/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
             >
-              <QrCode size={18} />
-              Generate Token & Enter Live Doctor Queue
+              <QrCode size={16} />
+              <span>Generate Fast-Track OPD Token Now</span>
             </button>
 
           </form>
         ) : (
-          /* Live Issued Token Display Card */
-          <div className="bg-slate-900 border border-teal-500/60 rounded-2xl p-6 shadow-2xl flex flex-col items-center text-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-teal-500/20 text-teal-400 flex items-center justify-center border border-teal-500/40">
-              <CheckCircle2 size={32} />
+          /* Step 3: Issued OPD Token Card */
+          <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-xl flex flex-col items-center text-center gap-4">
+            
+            <div className="w-14 h-14 rounded-2xl bg-teal-500/15 border border-teal-500/30 text-teal-400 flex items-center justify-center shadow-xs">
+              <CheckCircle2 size={30} />
             </div>
 
             <div>
-              <span className="text-xs uppercase font-bold text-teal-400 tracking-widest">
-                Check-In Complete • Live Queue Token
+              <span className="text-[10px] font-mono text-teal-400 uppercase tracking-widest font-bold">
+                OPD Token Issued & Queued
               </span>
-              <div className="text-4xl font-black text-white font-mono mt-1 tracking-tight">
+              <h2 className="text-3xl font-mono font-black text-white mt-1">
                 {generatedPatient.token}
-              </div>
-              <span className="text-xs text-slate-400 block mt-1">
-                Patient: <strong className="text-slate-200">{generatedPatient.name}</strong>
-              </span>
+              </h2>
+              <p className="text-xs text-slate-400 mt-1">
+                Patient: <strong className="text-white">{generatedPatient.name}</strong> • {department}
+              </p>
             </div>
 
-            <div className="w-full grid grid-cols-2 gap-3 p-3 rounded-xl bg-slate-950 border border-slate-800 text-left text-xs">
-              <div>
-                <span className="text-slate-500 block text-[10px] uppercase font-bold">Assigned Department</span>
-                <span className="font-bold text-slate-200">Internal Medicine (Cabin 4)</span>
+            {/* Estimated Wait Box */}
+            <div className="w-full grid grid-cols-2 gap-3 py-3 border-y border-slate-800 text-left">
+              <div className="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                <span className="text-[10px] text-slate-400 uppercase font-semibold block">Estimated Wait</span>
+                <span className="text-base font-bold text-emerald-400 font-mono">10 - 15 Mins</span>
+                <span className="text-[10px] text-slate-500 block">3 Patients Ahead</span>
               </div>
-              <div>
-                <span className="text-slate-500 block text-[10px] uppercase font-bold">Estimated Wait</span>
-                <span className="font-bold text-teal-400 flex items-center gap-1 font-mono">
-                  <Clock size={12} /> ~12 Minutes
-                </span>
+              <div className="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                <span className="text-[10px] text-slate-400 uppercase font-semibold block">Consultation Room</span>
+                <span className="text-base font-bold text-white font-mono">Room 104</span>
+                <span className="text-[10px] text-slate-500 block">Dr. Arvind Sharma</span>
               </div>
             </div>
 
-            <p className="text-[11px] text-slate-400 leading-relaxed">
-              Your medical history and previous records have been pushed to Dr. R. Verma's consultation screen in real time via Socket.io.
-            </p>
+            <div className="w-full bg-slate-950 p-3 rounded-xl border border-slate-800 flex items-center justify-between text-xs text-slate-400">
+              <div className="flex items-center gap-2">
+                <ShieldCheck size={16} className="text-teal-400 shrink-0" />
+                <span>ABHA Records Synced to Doctor Cockpit</span>
+              </div>
+              <span className="font-mono text-emerald-400 text-[11px] font-bold">Live Synced</span>
+            </div>
 
-            <button
-              onClick={() => navigate('/doctor')}
-              className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-400 hover:to-teal-500 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 shadow-lg transition-all"
-            >
-              Open Doctor Dashboard (See Live Queue) <ChevronRight size={16} />
-            </button>
+            <div className="w-full flex gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setGeneratedPatient(null)}
+                className="flex-1 py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs transition-colors cursor-pointer"
+              >
+                Check In Another Member
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate('/doctor')}
+                className="flex-1 py-2.5 px-3 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <span>View Doctor Live Queue</span>
+                <ArrowRight size={14} />
+              </button>
+            </div>
+
           </div>
         )}
 
-      </div>
+      </main>
 
     </div>
   );

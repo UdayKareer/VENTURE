@@ -203,8 +203,8 @@ export default function DoctorDashboard() {
   }, [selectedPatient.token, selectedPatient.primaryDiagnosis, selectedPatient.namasteCode]);
 
   const handleSelectNamasteDiagnosis = (item: NamasteDiagnosisItem) => {
-    const fullDiag = `${item.ayushTerm} (${item.genericTerm})`;
-    const fullCode = `${item.ayushTerm} [NAMASTE: ${item.namasteCode} | ICD-11 TM2: ${item.icd11Tm2Code}]`;
+    const fullDiag = item.genericTerm;
+    const fullCode = `${item.genericTerm} [ICD-11: ${item.icd11Tm2Code}]`;
     setPrimaryDiagnosis(fullDiag);
     setNamasteCode(fullCode);
     setShowNamastePicker(false);
@@ -219,7 +219,7 @@ export default function DoctorDashboard() {
       mockDatabase[updated.token] = updated;
     }
     syncPatientToSupabase(updated);
-    setStatusMessage(`✅ NAMASTE Code linked: ${item.namasteCode} (ICD-11 TM2: ${item.icd11Tm2Code})`);
+    setStatusMessage(`✅ Clinical ICD-11 Code linked: ${item.icd11Tm2Code}`);
     setTimeout(() => setStatusMessage(''), 3500);
   };
 
@@ -240,9 +240,7 @@ export default function DoctorDashboard() {
   // Integrative 10-Fold & 8-Point Physical Exam Enable/Disable logic:
   // Default: ENABLED for AYUSH (Ayurveda) patients, DISABLED for Allopath patients.
   // Doctor can toggle enable/disable on any patient anytime.
-  const isIntegrativeEnabled = selectedPatient.enableIntegrativeExam !== undefined
-    ? selectedPatient.enableIntegrativeExam
-    : selectedPatient.mode === 'ayush';
+  const isIntegrativeEnabled = selectedPatient.enableIntegrativeExam === true;
 
   const handleToggleIntegrativeExam = (enabled: boolean) => {
     const updated: PatientData = {
@@ -398,7 +396,7 @@ export default function DoctorDashboard() {
   };
 
   const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
-  const [queueFilter, setQueueFilter] = useState<'all' | 'emergency' | 'ayush' | 'waiting' | 'relieved'>('all');
+  const [queueFilter, setQueueFilter] = useState<'all' | 'emergency' | 'waiting' | 'relieved'>('all');
   const [sortBy, setSortBy] = useState<'longest_wait' | 'newest' | 'acuity'>('longest_wait');
   const [viewingDoc, setViewingDoc] = useState<UploadedDocument | null>(null);
 
@@ -908,7 +906,7 @@ export default function DoctorDashboard() {
     setPrescribedMeds(prescribedMeds.filter((_, i) => i !== index));
   };
 
-  const handleApplyOrderSet = (type: 'cardiac' | 'amlapitta' | 'diabetes') => {
+  const handleApplyOrderSet = (type: 'cardiac' | 'trauma' | 'diabetes') => {
     if (type === 'cardiac') {
       setPrescribedMeds([
         { name: 'Tab Ecosprin (Aspirin)', dose: '300 mg (Stat)', frequency: 'Stat chewable', duration: 'Immediate', instructions: 'Chew stat with water' },
@@ -917,13 +915,14 @@ export default function DoctorDashboard() {
         { name: 'Tab Sorbitrate (Isosorbide)', dose: '5 mg', frequency: 'SOS Sublingual', duration: 'SOS', instructions: 'Keep under tongue if chest pain' },
       ]);
       setDoctorNotes((prev) => `${prev}\n[CARDIAC PROTOCOL]: High suspicion of Acute Coronary Syndrome. Stat 12-lead ECG and Troponin-I sent. Loading antiplatelets administered.`);
-    } else if (type === 'amlapitta') {
+    } else if (type === 'trauma') {
       setPrescribedMeds([
-        { name: 'Cap Pantoprazole', dose: '40 mg', frequency: '1-0-0 (Fasting)', duration: '14 Days', instructions: '30 mins before breakfast' },
-        { name: 'Syp Sucralfate + Oxetacaine', dose: '10 ml', frequency: '1-1-1 (TDS)', duration: '7 Days', instructions: 'After meals for gastric coating' },
-        { name: 'Avipattikar Churna (AYUSH)', dose: '3 grams', frequency: '1-0-1', duration: '14 Days', instructions: 'With lukewarm water after meals' },
+        { name: 'Inj Tranexamic Acid (TXA)', dose: '1 g in 100ml NS', frequency: 'Stat IV Infusion', duration: 'Over 10 mins', instructions: 'Crash injury antifibrinolytic stat' },
+        { name: 'Inj Tetanus Toxoid (TT)', dose: '0.5 ml', frequency: 'Stat IM', duration: 'Immediate', instructions: 'Deep intramuscular' },
+        { name: 'IV Normal Saline (0.9% NaCl)', dose: '1000 ml', frequency: 'Rapid IV bolus', duration: 'Stat', instructions: 'Fluid resuscitation wide bore' },
+        { name: 'Inj Paracetamol', dose: '1 g IV', frequency: 'Stat infusion', duration: 'Over 15 mins', instructions: 'Non-opioid acute analgesia' },
       ]);
-      setDoctorNotes((prev) => `${prev}\n[AMLAPITTA REGIMEN]: Integrative management. Pitta-pacifying diet advised. Avoid tea, citrus, and NSAIDs.`);
+      setDoctorNotes((prev) => `${prev}\n[TRAUMA RED PROTOCOL]: Golden Hour trauma resuscitation initiated. Standby 2 units O-neg uncrossmatched PRBCs. Bedside FAST ultrasound and non-contrast CT trauma series ordered.`);
     } else if (type === 'diabetes') {
       setPrescribedMeds([
         { name: 'Tab Metformin SR', dose: '1000 mg', frequency: '1-0-1 (Post-meal)', duration: '30 Days', instructions: 'Twice daily with meals' },
@@ -947,7 +946,6 @@ export default function DoctorDashboard() {
   const filteredQueue = useMemo(() => {
     return allQueuePatients.filter((p) => {
       if (queueFilter === 'emergency') return p.triageLevel === 'emergency' && p.status !== 'accepted';
-      if (queueFilter === 'ayush') return p.mode === 'ayush' && p.status !== 'accepted';
       if (queueFilter === 'waiting') return p.status === 'waiting';
       if (queueFilter === 'relieved') return p.status === 'accepted';
       return p.status !== 'accepted';
@@ -1146,15 +1144,7 @@ export default function DoctorDashboard() {
                     queueFilter === 'emergency' ? 'bg-red-600 text-white shadow-2xs' : 'text-red-700'
                   }`}
                 >
-                  🚨 Emergency ({activeQueuePatients.filter(p => p.triageLevel === 'emergency').length})
-                </button>
-                <button
-                  onClick={() => setQueueFilter('ayush')}
-                  className={`px-3 py-1.5 rounded-lg transition-all ${
-                    queueFilter === 'ayush' ? 'bg-emerald-600 text-white shadow-2xs' : 'text-emerald-700'
-                  }`}
-                >
-                  🌿 AYUSH ({activeQueuePatients.filter(p => p.mode === 'ayush').length})
+                  🚨 108 Trauma ({activeQueuePatients.filter(p => p.triageLevel === 'emergency').length})
                 </button>
                 <button
                   onClick={() => setQueueFilter('waiting')}
@@ -1162,7 +1152,7 @@ export default function DoctorDashboard() {
                     queueFilter === 'waiting' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600'
                   }`}
                 >
-                  Waiting ({allQueuePatients.filter(p => p.status === 'waiting').length})
+                  Waiting OPD ({allQueuePatients.filter(p => p.status === 'waiting' && p.triageLevel !== 'emergency').length})
                 </button>
                 <button
                   onClick={() => setQueueFilter('relieved')}
@@ -1266,9 +1256,9 @@ export default function DoctorDashboard() {
                     </td>
                     <td className="p-4">
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                        p.mode === 'ayush' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-blue-50 text-blue-700'
+                        p.triageLevel === 'emergency' ? 'bg-red-50 text-red-700 border border-red-200 font-mono' : 'bg-teal-50 text-teal-700 border border-teal-200'
                       }`}>
-                        {p.mode === 'ayush' ? 'AYUSH' : 'Modern OPD'}
+                        {p.triageLevel === 'emergency' ? '🚨 108 Trauma' : 'Hospital OPD'}
                       </span>
                     </td>
                     <td className="p-4">
@@ -1854,12 +1844,7 @@ export default function DoctorDashboard() {
                             )}
                             {p.triageLevel === 'emergency' && !p.esiTriage && (
                               <span className="text-[9px] font-bold text-red-600 bg-red-100 px-1.5 py-0.5 rounded-full animate-pulse">
-                                EMERGENCY
-                              </span>
-                            )}
-                            {p.mode === 'ayush' && (
-                              <span className="text-[9px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded-full">
-                                AYUSH
+                                108 TRAUMA
                               </span>
                             )}
                           </div>
@@ -2474,36 +2459,7 @@ export default function DoctorDashboard() {
                     </div>
 
                     {/* Bedside Physical Examination & Constitutional Matrix (10-Fold & 8-Point) */}
-                    {!isIntegrativeEnabled ? (
-                      <div className="p-3.5 rounded-xl bg-slate-50/90 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-slate-200 text-slate-600 flex items-center justify-center shrink-0">
-                            <Stethoscope size={16} />
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-xs font-bold text-slate-800">
-                                10-Fold Systemic Constitution & 8-Point Bedside Pariksha
-                              </span>
-                              <span className="text-[10px] font-semibold bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full">
-                                Disabled (Allopathic Standard)
-                              </span>
-                            </div>
-                            <p className="text-[11px] text-slate-500 mt-0.5">
-                              Ayurvedic 10-Fold / 8-Point Pariksha is off by default for Allopathy consultations. Doctor can enable it anytime.
-                            </p>
-                          </div>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => handleToggleIntegrativeExam(true)}
-                          className="px-3 py-1.5 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer shrink-0 shadow-2xs"
-                        >
-                          <Plus size={13} />
-                          <span>+ Enable 10-Fold Exam</span>
-                        </button>
-                      </div>
-                    ) : (
+                    {isIntegrativeEnabled && (
                       <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
                         <div className="flex flex-wrap items-center justify-between gap-2">
                           <div className="flex items-center gap-2">
@@ -2650,15 +2606,15 @@ export default function DoctorDashboard() {
                               </div>
 
                               {/* Baseline Constitution / Age (Prakriti / Vaya) */}
-                              <div className="p-2.5 bg-emerald-50/40 rounded-lg border border-emerald-200 shadow-2xs">
-                                <span className="text-[10px] text-emerald-800 font-bold block uppercase mb-0.5">
-                                  Constitution (Prakriti)
+                              <div className="p-2.5 bg-rose-50/60 rounded-lg border border-rose-200 shadow-2xs">
+                                <span className="text-[10px] text-rose-800 font-bold block uppercase mb-0.5">
+                                  Blood Group (Rh)
                                 </span>
-                                <span className="font-bold text-xs text-slate-900 block truncate" title={selectedPatient.prakriti || selectedPatient.dashavidha?.prakriti || (selectedPatient.mode === 'ayush' ? 'Vata-Pitta' : 'Balanced')}>
-                                  {selectedPatient.prakriti || selectedPatient.dashavidha?.prakriti || (selectedPatient.mode === 'ayush' ? 'Vata-Pitta' : 'Balanced')}
+                                <span className="font-bold text-xs font-mono text-rose-900 block truncate">
+                                  {(selectedPatient as any).bloodGroup || 'O+'}
                                 </span>
-                                <span className="text-[9px] text-emerald-600 font-medium block">
-                                  {selectedPatient.age ? `Age: ${selectedPatient.age} Yrs` : 'Self-Identified'}
+                                <span className="text-[9px] text-rose-600 font-medium block">
+                                  Trauma Standby Ready
                                 </span>
                               </div>
                             </div>
@@ -2981,17 +2937,17 @@ export default function DoctorDashboard() {
                         <button
                           type="button"
                           onClick={() => setShowNamastePicker(!showNamastePicker)}
-                          className="px-2.5 py-1 text-[11px] font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer"
+                          className="px-2.5 py-1 text-[11px] font-bold text-teal-800 bg-teal-50 hover:bg-teal-100 border border-teal-200 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer"
                         >
-                          <span>{showNamastePicker ? 'Close Directory' : '📖 Browse Morbidity Directory'}</span>
+                          <span>{showNamastePicker ? 'Close Directory' : '📖 Browse ICD-11 Directory'}</span>
                         </button>
                       </div>
 
                       {/* Searchable Preset Directory Drawer */}
                       {showNamastePicker && (
-                        <div className="p-3 bg-emerald-50/50 border border-emerald-200 rounded-xl space-y-2.5 animate-fade-in text-xs">
-                          <div className="flex items-center justify-between text-[11px] font-bold text-emerald-950">
-                            <span>Select Standardized Morbidity Preset (Ayush + Generic Dual Terminology):</span>
+                        <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2.5 animate-fade-in text-xs">
+                          <div className="flex items-center justify-between text-[11px] font-bold text-slate-900">
+                            <span>Select Standardized Clinical Diagnosis (WHO ICD-11):</span>
                             <span className="text-[10px] text-slate-500 font-normal">Click any card to apply</span>
                           </div>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-56 overflow-y-auto pr-1">
@@ -3000,19 +2956,15 @@ export default function DoctorDashboard() {
                                 key={item.namasteCode}
                                 type="button"
                                 onClick={() => handleSelectNamasteDiagnosis(item)}
-                                className="text-left p-2.5 bg-white hover:bg-emerald-50 border border-emerald-100 hover:border-emerald-300 rounded-xl transition-all shadow-2xs group cursor-pointer"
+                                className="text-left p-2.5 bg-white hover:bg-teal-50 border border-slate-200 hover:border-teal-300 rounded-xl transition-all shadow-2xs group cursor-pointer"
                               >
                                 <div className="flex items-center justify-between text-slate-900 font-bold text-xs">
-                                  <span className="group-hover:text-emerald-800">{item.ayushTerm}</span>
-                                  <span className="text-[9px] font-mono font-black text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
-                                    {item.namasteCode}
+                                  <span className="group-hover:text-teal-800 font-bold">{item.genericTerm}</span>
+                                  <span className="text-[9px] font-mono font-black text-teal-700 bg-teal-50 px-1.5 py-0.5 rounded border border-teal-200">
+                                    ICD-11: {item.icd11Tm2Code}
                                   </span>
                                 </div>
-                                <div className="text-[11px] text-slate-600 font-medium mt-0.5">
-                                  Generic: <span className="font-semibold text-slate-800">{item.genericTerm}</span>
-                                </div>
                                 <div className="flex items-center justify-between text-[10px] text-slate-400 mt-1">
-                                  <span>ICD-11: <strong className="font-mono text-slate-600">{item.icd11Tm2Code}</strong></span>
                                   <span className="text-teal-600 font-medium">{item.category}</span>
                                 </div>
                               </button>
@@ -3095,10 +3047,10 @@ export default function DoctorDashboard() {
                           ACS Protocol
                         </button>
                         <button
-                          onClick={() => handleApplyOrderSet('amlapitta')}
-                          className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold hover:bg-emerald-200 transition-colors"
+                          onClick={() => handleApplyOrderSet('trauma')}
+                          className="px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-bold hover:bg-amber-200 transition-colors"
                         >
-                          Amlapitta Set
+                          🚨 Trauma Set
                         </button>
                         <button
                           onClick={() => handleApplyOrderSet('diabetes')}

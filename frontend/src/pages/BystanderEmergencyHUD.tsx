@@ -7,21 +7,26 @@ import {
   Ambulance,
   Lock,
   KeyRound,
-  UserCheck,
-  ChevronRight,
-  Radio,
+  Users,
   MapPin,
-  Heart,
+  HeartPulse,
   CheckCircle2,
   HelpCircle,
-  Clock
+  FileText,
+  Clock,
+  Sparkles,
+  ChevronRight,
+  ExternalLink,
+  Activity,
+  AlertOctagon,
+  ShieldAlert
 } from 'lucide-react';
 import { usePatientStore, type FamilyMemberProfile } from '../store/usePatientStore';
 
 export default function BystanderEmergencyHUD() {
   const { tagId } = useParams();
   const navigate = useNavigate();
-  const { vehicleTag, triggerEmergencySos, antiPrankVerification, verifyOwnerSafety } = usePatientStore();
+  const { vehicleTag, triggerEmergencySos } = usePatientStore();
 
   const [selectedMember, setSelectedMember] = useState<FamilyMemberProfile | null>(
     vehicleTag.members[0] || null
@@ -43,84 +48,107 @@ export default function BystanderEmergencyHUD() {
   const handleCallEmergencyContact = () => {
     setCallInitiated(true);
     setTimeout(() => {
-      // Direct tel link simulation
       window.location.href = `tel:${selectedMember?.emergencyContact?.realPhone || '108'}`;
-    }, 800);
+    }, 600);
   };
 
   const handleUnlockParamedic = (e: React.FormEvent) => {
     e.preventDefault();
-    if (paramedicPin === 'PARAMEDIC-108' || paramedicPin === '108' || paramedicPin === 'DOCTOR-ER') {
+    if (paramedicPin.trim().toUpperCase() === 'PARAMEDIC-108' || paramedicPin.trim() === '108' || paramedicPin.trim().toUpperCase() === 'DOCTOR-ER') {
       setShowPinModal(false);
       navigate('/paramedic/triage');
     } else {
-      setPinError('Invalid PIN. Use PARAMEDIC-108 for emergency responder access.');
+      setPinError('Invalid PIN. Official responder code is PARAMEDIC-108.');
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-start font-sans pb-12">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-start font-sans pb-16 selection:bg-rose-500/30">
       
-      {/* High-Contrast Incident Header */}
-      <div className="w-full bg-red-600 px-4 py-3 text-white text-center shadow-lg sticky top-0 z-40 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <AlertTriangle size={18} className="animate-pulse shrink-0" />
-          <span className="text-xs font-black tracking-wider uppercase">
-            Emergency Roadside HUD • Live Accident Mode
-          </span>
-        </div>
-        <span className="text-[10px] bg-red-800/80 px-2 py-0.5 rounded font-mono font-bold">
-          {tagId || vehicleTag.tagId}
-        </span>
-      </div>
+      {/* Top Clinical Ticker / Navigation */}
+      <header className="w-full bg-slate-900 border-b border-slate-800 px-4 py-3 sticky top-0 z-40 shadow-md">
+        <div className="max-w-xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg bg-rose-600 flex items-center justify-center text-white font-bold shadow-xs">
+              <AlertOctagon size={16} />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-white tracking-tight uppercase">PingME Emergency HUD</span>
+                <span className="inline-flex items-center gap-1 text-[10px] font-mono font-semibold px-1.5 py-0.2 rounded bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping" /> Live Crash Mode
+                </span>
+              </div>
+              <p className="text-[10px] text-slate-400 font-mono">Tag: {tagId || vehicleTag.tagId}</p>
+            </div>
+          </div>
 
-      <div className="max-w-md w-full px-4 pt-4 flex flex-col gap-4">
+          <button
+            onClick={() => setShowPinModal(true)}
+            className="text-[11px] font-semibold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
+          >
+            <KeyRound size={12} className="text-amber-400" />
+            <span>108 Responder</span>
+          </button>
+        </div>
+      </header>
+
+      <main className="max-w-xl w-full px-4 pt-4 flex flex-col gap-4">
         
         {/* Supreme Court Section 134A Good Samaritan Legal Immunity Shield */}
-        <div className="bg-emerald-950/70 border border-emerald-500/40 rounded-xl p-3.5 shadow-md flex items-start gap-3">
-          <div className="p-2 rounded-lg bg-emerald-500/20 text-emerald-400 shrink-0 mt-0.5">
-            <ShieldCheck size={20} />
+        <div className="bg-emerald-950/40 border border-emerald-500/30 rounded-xl p-3.5 flex items-start gap-3 shadow-xs">
+          <div className="p-2 rounded-lg bg-emerald-500/15 text-emerald-400 shrink-0 mt-0.5">
+            <ShieldCheck size={18} />
           </div>
           <div>
-            <h4 className="text-xs font-black text-emerald-300 uppercase tracking-wide">
-              Section 134A Good Samaritan Legal Immunity
-            </h4>
-            <p className="text-[11px] text-emerald-200/90 leading-tight mt-1">
-              Under Supreme Court Order & Indian Motor Vehicles Act, <strong>you cannot be questioned by police, detained, or asked to pay hospital fees</strong> for helping this crash victim.
+            <div className="flex items-center gap-1.5">
+              <h4 className="text-xs font-bold text-emerald-300 uppercase tracking-wide">
+                Good Samaritan Legal Protection (Sec. 134A)
+              </h4>
+              <span className="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.2 rounded font-mono font-bold">
+                Supreme Court Order
+              </span>
+            </div>
+            <p className="text-[11px] text-emerald-200/80 leading-relaxed mt-1">
+              You are legally protected under the Motor Vehicles Act. <strong>Police, hospitals, or courts cannot harass, detain, or charge you</strong> for assisting this crash victim.
             </p>
           </div>
         </div>
 
-        {/* Vehicle Identity Context */}
+        {/* Vehicle & Telemetry Snapshot */}
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-3.5 flex items-center justify-between text-xs">
           <div>
-            <span className="text-[10px] text-slate-400 uppercase font-semibold block">Vehicle Involved</span>
+            <span className="text-[10px] text-slate-400 uppercase font-semibold block tracking-wider">Crash Vehicle</span>
             <span className="font-bold text-white text-sm font-mono">{vehicleTag.regNumber}</span>
             <span className="text-slate-400 block text-[11px]">{vehicleTag.vehicleModel}</span>
           </div>
           <div className="text-right">
-            <span className="text-[10px] text-slate-400 uppercase font-semibold block">GPS Location</span>
-            <span className="text-amber-400 font-semibold flex items-center gap-1 justify-end text-[11px]">
+            <span className="text-[10px] text-slate-400 uppercase font-semibold block tracking-wider">Incident GPS</span>
+            <span className="text-rose-400 font-semibold flex items-center gap-1 justify-end text-[11px] font-mono">
               <MapPin size={12} /> NH-44 Highway Mile 18
             </span>
+            <span className="text-[10px] text-slate-500">Chandigarh-Ambala Corridor</span>
           </div>
         </div>
 
-        {/* Step 1: Visual Photo Identification of Injured Person */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
-          <div className="flex items-center justify-between mb-2.5">
-            <h3 className="text-xs font-bold text-white flex items-center gap-1.5 uppercase tracking-wider">
-              <UserCheck size={16} className="text-amber-400" />
-              1. Confirm Injured Rider by Photo
-            </h3>
-            <span className="text-[10px] text-slate-400">Match Face Below</span>
+        {/* Section 1: Who is Injured? Registered People Selection */}
+        <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm">
+          <div className="flex items-center justify-between mb-3 border-b border-slate-800 pb-2.5">
+            <div>
+              <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                <Users size={14} className="text-teal-400" />
+                Select Injured Rider / Passenger
+              </h3>
+              <p className="text-[11px] text-slate-400 mt-0.5">
+                Match the victim's face to access life-saving clinical details & emergency family contacts:
+              </p>
+            </div>
+            <span className="text-[10px] font-mono text-teal-400 font-semibold bg-teal-500/10 px-2 py-0.5 rounded border border-teal-500/20 shrink-0">
+              {vehicleTag.members.length} Registered
+            </span>
           </div>
 
-          <p className="text-[11px] text-slate-400 mb-3">
-            Look at the crash victim. Tap their photo to see emergency first-aid details and contact family:
-          </p>
-
-          <div className="grid grid-cols-3 gap-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
             {vehicleTag.members.map((member) => {
               const isSelected = selectedMember?.id === member.id && !isGuestRider;
               return (
@@ -130,78 +158,110 @@ export default function BystanderEmergencyHUD() {
                     setSelectedMember(member);
                     setIsGuestRider(false);
                   }}
-                  className={`p-2 rounded-xl border flex flex-col items-center text-center transition-all cursor-pointer ${
+                  className={`p-3 rounded-xl border text-left transition-all cursor-pointer relative flex flex-col justify-between ${
                     isSelected
-                      ? 'border-amber-500 bg-amber-500/15 shadow-lg shadow-amber-500/20'
-                      : 'border-slate-800 bg-slate-950 opacity-75 hover:opacity-100'
+                      ? 'border-teal-500 bg-teal-500/10 shadow-sm ring-1 ring-teal-500/40'
+                      : 'border-slate-800 bg-slate-950/70 hover:bg-slate-950 hover:border-slate-700 opacity-80 hover:opacity-100'
                   }`}
                 >
-                  <img
-                    src={member.photoUrl}
-                    alt={member.name}
-                    className="w-14 h-14 rounded-lg object-cover mb-1.5 border border-slate-700"
-                  />
-                  <span className="text-[11px] font-bold text-white truncate w-full">
-                    {member.name.split(' ')[0]}
-                  </span>
-                  <span className="text-[9px] text-slate-400">{member.relationship}</span>
-                  <span className="text-[10px] font-black text-red-400 mt-1">
-                    {member.bloodGroup}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={member.photoUrl}
+                      alt={member.name}
+                      className="w-12 h-12 rounded-lg object-cover shrink-0 border border-slate-700"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-white truncate">{member.name}</span>
+                      </div>
+                      <span className="text-[10px] text-slate-400 block">{member.relationship} • {member.age}y</span>
+                      <div className="mt-1 flex items-center gap-1.5">
+                        <span className="text-[10px] font-mono font-bold text-rose-400 bg-rose-500/10 px-1.5 py-0.2 rounded border border-rose-500/20">
+                          {member.bloodGroup}
+                        </span>
+                        <span className="text-[9px] text-slate-500 truncate">
+                          {member.gender}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {isSelected && (
+                    <div className="mt-2.5 pt-2 border-t border-teal-500/20 flex items-center justify-between text-[10px] text-teal-300 font-semibold">
+                      <span>Selected Victim</span>
+                      <CheckCircle2 size={12} className="text-teal-400" />
+                    </div>
+                  )}
                 </button>
               );
             })}
           </div>
 
-          {/* "Guest Rider" Override Button */}
+          {/* Guest Rider Toggle */}
           <button
             onClick={() => {
-              setIsGuestRider(true);
-              setSelectedMember(null);
+              setIsGuestRider(!isGuestRider);
+              if (!isGuestRider) setSelectedMember(null);
+              else setSelectedMember(vehicleTag.members[0]);
             }}
-            className={`w-full mt-3 py-2 px-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+            className={`w-full mt-3 py-2 px-3 rounded-lg border text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${
               isGuestRider
-                ? 'border-red-500 bg-red-500/20 text-red-200'
-                : 'border-slate-800 bg-slate-950/80 text-slate-400 hover:text-white'
+                ? 'border-amber-500/50 bg-amber-500/10 text-amber-200'
+                : 'border-slate-800 bg-slate-950 text-slate-400 hover:text-slate-200'
             }`}
           >
-            <HelpCircle size={14} />
-            Victim is Someone Else / Guest Rider (Lent Bike)
+            <HelpCircle size={14} className={isGuestRider ? 'text-amber-400' : 'text-slate-500'} />
+            <span>Victim is a Borrower / Unregistered Guest Rider (Lent Vehicle)</span>
           </button>
         </div>
 
-        {/* Step 2: Critical Emergency Actions for Selected Victim */}
+        {/* Section 2: Deep Emergency Clinical Profile of Selected Victim */}
         {selectedMember && !isGuestRider && (
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col gap-3">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm flex flex-col gap-3.5">
             
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <div>
-                <span className="text-[10px] text-slate-400 uppercase font-semibold">Identified Victim</span>
-                <h3 className="text-base font-bold text-white">{selectedMember.name}</h3>
-                <span className="text-xs text-slate-400">Age: {selectedMember.age} ({selectedMember.gender})</span>
+            <div className="flex items-start justify-between border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-3">
+                <img
+                  src={selectedMember.photoUrl}
+                  alt={selectedMember.name}
+                  className="w-14 h-14 rounded-xl object-cover border border-slate-700 shadow-xs"
+                />
+                <div>
+                  <span className="text-[10px] font-mono text-teal-400 uppercase tracking-wider font-semibold">
+                    Verified Digital Health Vault
+                  </span>
+                  <h3 className="text-base font-bold text-white tracking-tight">{selectedMember.name}</h3>
+                  <div className="text-[11px] text-slate-400 flex items-center gap-2 mt-0.5">
+                    <span>Age: {selectedMember.age} ({selectedMember.gender})</span>
+                    <span>•</span>
+                    <span className="font-mono text-slate-300">ABHA: {selectedMember.abhaId}</span>
+                  </div>
+                </div>
               </div>
 
-              {/* Blood Group Badge */}
-              <div className="text-right">
-                <span className="text-[9px] text-slate-400 uppercase font-bold block mb-0.5">Blood Group</span>
-                <span className="text-xl font-black text-red-500 bg-red-500/10 border border-red-500/30 px-3 py-1 rounded-xl">
+              {/* Large Blood Group Badge */}
+              <div className="text-right shrink-0">
+                <span className="text-[9px] text-slate-400 uppercase font-bold block tracking-wider mb-1">
+                  Blood Group
+                </span>
+                <span className="text-xl font-mono font-black text-rose-400 bg-rose-500/10 border border-rose-500/30 px-3.5 py-1 rounded-xl shadow-xs inline-block">
                   {selectedMember.bloodGroup}
                 </span>
               </div>
             </div>
 
-            {/* Critical Allergies Warning */}
+            {/* Critical Allergies Box */}
             {selectedMember.criticalAllergies.length > 0 && (
-              <div className="bg-red-950/50 border border-red-800/60 rounded-xl p-3 flex items-start gap-2.5">
-                <AlertTriangle size={16} className="text-red-400 shrink-0 mt-0.5" />
-                <div>
-                  <span className="text-[11px] font-bold text-red-300 uppercase block">
-                    Critical First-Aid & Drug Warning:
+              <div className="bg-rose-950/30 border border-rose-500/40 rounded-xl p-3 flex items-start gap-2.5">
+                <AlertTriangle size={16} className="text-rose-400 shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <span className="text-[11px] font-bold text-rose-300 uppercase tracking-wide block">
+                    Severe Drug Allergy Alert:
                   </span>
-                  <div className="flex flex-wrap gap-1 mt-1">
-                    {selectedMember.criticalAllergies.map((a, i) => (
-                      <span key={i} className="text-[10px] font-bold text-red-200 bg-red-900/60 px-2 py-0.5 rounded">
-                        DO NOT GIVE: {a}
+                  <div className="flex flex-wrap gap-1.5 mt-1.5">
+                    {selectedMember.criticalAllergies.map((allergy, i) => (
+                      <span key={i} className="text-[10px] font-mono font-bold text-rose-200 bg-rose-900/50 border border-rose-500/30 px-2 py-0.5 rounded">
+                        DO NOT ADMINISTER: {allergy}
                       </span>
                     ))}
                   </div>
@@ -209,97 +269,145 @@ export default function BystanderEmergencyHUD() {
               </div>
             )}
 
-            {/* Masked 1-Tap Call to Family Proxy */}
-            <button
-              onClick={handleCallEmergencyContact}
-              className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-bold text-sm shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2.5 transition-all cursor-pointer"
-            >
-              <PhoneCall size={18} />
-              {callInitiated ? 'Calling Proxy Bridge...' : `1-Tap Call Family: ${selectedMember.emergencyContact.name} (${selectedMember.emergencyContact.relation})`}
-            </button>
-            <p className="text-[10px] text-slate-500 text-center">
-              Zero-knowledge call via proxy bridge. Your phone number is not revealed.
-            </p>
+            {/* Chronic Conditions & Implants */}
+            {selectedMember.chronicConditions.length > 0 && (
+              <div className="bg-slate-950/80 border border-slate-800 rounded-xl p-3">
+                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-1.5">
+                  Pre-Existing Medical History & Implants
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  {selectedMember.chronicConditions.map((cond, i) => (
+                    <span key={i} className="text-[11px] text-slate-300 bg-slate-900 border border-slate-800 px-2.5 py-1 rounded-lg">
+                      {cond}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Current Active Medications */}
+            {selectedMember.currentMedications.length > 0 && (
+              <div className="bg-slate-950/80 border border-slate-800 rounded-xl p-3">
+                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-1.5">
+                  Daily Regimen (Blood Thinners / Chronic Rx)
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  {selectedMember.currentMedications.map((med, i) => (
+                    <span key={i} className="text-[11px] font-mono text-amber-300/90 bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 rounded">
+                      {med}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 1-Tap Masked Family Relay Phone Call */}
+            <div className="pt-1">
+              <button
+                onClick={handleCallEmergencyContact}
+                className="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
+              >
+                <PhoneCall size={16} />
+                <span>
+                  {callInitiated
+                    ? 'Connecting Proxy Call...'
+                    : `1-Tap Call Family: ${selectedMember.emergencyContact.name} (${selectedMember.emergencyContact.relation})`}
+                </span>
+              </button>
+              <p className="text-[10px] text-slate-500 text-center mt-1.5">
+                Privacy Protected: Caller ID is masked via telecom bridge. Your personal number is not shared.
+              </p>
+            </div>
+
           </div>
         )}
 
-        {/* Guest Rider Special Notice */}
+        {/* Guest Rider Flagged Notice */}
         {isGuestRider && (
-          <div className="bg-amber-950/60 border border-amber-600/40 rounded-xl p-4 text-xs text-amber-200 flex flex-col gap-2">
+          <div className="bg-amber-950/40 border border-amber-500/40 rounded-xl p-4 text-xs text-amber-200 flex flex-col gap-2 shadow-xs">
             <div className="font-bold flex items-center gap-2 text-amber-300">
-              <AlertTriangle size={16} /> Guest Rider Incident Flagged
+              <AlertTriangle size={16} /> Unregistered Borrower Incident Flagged
             </div>
             <p className="text-[11px] text-amber-200/90 leading-relaxed">
-              We have dispatched an automated SMS alert to the registered vehicle owner ({vehicleTag.registeredOwner}) to identify the borrower. Please trigger 108 trauma beacon below immediately:
+              We dispatched an automated high-priority SMS to the registered vehicle owner (<strong>{vehicleTag.registeredOwner}</strong>) to identify the driver. Please trigger 108 Emergency Beacon below so ambulance dispatch occurs immediately:
             </p>
           </div>
         )}
 
-        {/* Step 3: Trigger 108 Ambulance Trauma SOS */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col gap-3">
-          <div className="flex items-center justify-between">
-            <h4 className="text-xs font-bold text-white flex items-center gap-1.5 uppercase tracking-wider">
-              <Ambulance size={16} className="text-red-400" />
-              2. Hospital Casualty Alert
-            </h4>
-            <span className="text-[10px] text-red-400 font-bold animate-pulse">Live Telemetry Feed</span>
+        {/* Section 3: Instant 108 Hospital Trauma SOS Beacon */}
+        <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm flex flex-col gap-3">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
+            <div>
+              <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                <Ambulance size={15} className="text-rose-400" />
+                Hospital Trauma SOS Beacon
+              </h4>
+              <p className="text-[11px] text-slate-400 mt-0.5">
+                Alerts PGIMER & GMCH-32 Emergency Bay with crash coordinates & blood requirement:
+              </p>
+            </div>
+            <span className="text-[10px] font-mono text-rose-400 font-bold bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">
+              Live Socket
+            </span>
           </div>
 
           <button
             onClick={handleTriggerSOS}
             disabled={sosSent}
-            className={`w-full py-3.5 px-4 rounded-xl font-black text-sm flex items-center justify-center gap-2.5 shadow-xl transition-all cursor-pointer ${
+            className={`w-full py-3.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${
               sosSent
-                ? 'bg-emerald-600 text-white cursor-default'
-                : 'bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white shadow-red-600/30'
+                ? 'bg-emerald-600 text-white cursor-default shadow-xs'
+                : 'bg-rose-600 hover:bg-rose-500 text-white shadow-md shadow-rose-600/30'
             }`}
           >
-            <Radio size={18} className={sosSent ? '' : 'animate-ping'} />
-            {sosSent ? 'Trauma SOS Transmitted to Emergency Bay!' : '🚨 Trigger 108 Ambulance SOS Beacon'}
+            <Ambulance size={18} className={sosSent ? '' : 'animate-bounce'} />
+            <span>
+              {sosSent
+                ? '✓ Trauma Beacon Broadcasted to PGIMER Level-1 Bay!'
+                : '🚨 Trigger 108 Ambulance SOS & Hospital Trauma Beacon'}
+            </span>
           </button>
 
           {sosSent && (
-            <div className="p-3 rounded-xl bg-emerald-950/60 border border-emerald-500/40 text-emerald-200 text-xs flex items-center gap-2">
+            <div className="p-3 rounded-lg bg-emerald-950/40 border border-emerald-500/30 text-emerald-200 text-xs flex items-center gap-2">
               <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
-              <span>
-                Trauma Beacon broadcasted to PGIMER & GMCH-32 Emergency Bays with GPS coordinates.
+              <span className="leading-tight">
+                Emergency broadcast live: 108 Dispatched. PGIMER Trauma Bay alerted with <strong>{selectedMember?.bloodGroup || 'O-'} blood standby</strong>.
               </span>
             </div>
           )}
         </div>
 
-        {/* Data Privacy & Authorized Paramedic Login Section */}
-        <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-4 flex flex-col items-center text-center gap-2">
-          <div className="flex items-center gap-1.5 text-xs font-bold text-slate-400">
-            <Lock size={14} /> Full Medical Vault Locked (DPDP Act 2023)
+        {/* DPDP Act 2023 Security Notice & Authorized Responder Entry */}
+        <div className="bg-slate-900/60 border border-slate-800/80 rounded-xl p-3.5 flex items-center justify-between text-xs">
+          <div className="flex items-center gap-2 text-slate-400">
+            <Lock size={14} className="text-slate-500" />
+            <span className="text-[11px]">DPDP Act 2023 Encrypted Vault</span>
           </div>
-          <p className="text-[11px] text-slate-500">
-            Past hospital prescriptions, surgeries, and ABHA EHR records are encrypted and accessible only to authorized paramedics and trauma surgeons.
-          </p>
-
           <button
             onClick={() => setShowPinModal(true)}
-            className="mt-1 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 font-bold text-xs flex items-center gap-2 transition-colors cursor-pointer"
+            className="text-[11px] font-semibold text-teal-400 hover:text-teal-300 flex items-center gap-1 cursor-pointer"
           >
-            <KeyRound size={14} /> 108 Paramedic / Doctor Login
+            <span>Paramedic Login</span>
+            <ChevronRight size={12} />
           </button>
         </div>
 
-      </div>
+      </main>
 
       {/* Paramedic Login PIN Modal */}
       {showPinModal && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-6 shadow-2xl">
-            <div className="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center mx-auto mb-3 border border-amber-500/30">
-              <KeyRound size={24} />
+            <div className="w-11 h-11 rounded-xl bg-teal-500/10 text-teal-400 flex items-center justify-center mx-auto mb-3 border border-teal-500/30">
+              <KeyRound size={22} />
             </div>
 
-            <h3 className="text-base font-bold text-white text-center">
-              108 Emergency Responder PIN
+            <h3 className="text-sm font-bold text-white text-center">
+              108 Paramedic / Doctor Login
             </h3>
             <p className="text-xs text-slate-400 text-center mt-1 mb-4">
-              Enter official paramedic credentials to access in-transit trauma intake and full patient medical history:
+              Enter official emergency responder credentials to open the in-transit triage console:
             </p>
 
             <form onSubmit={handleUnlockParamedic} className="space-y-4">
@@ -312,16 +420,16 @@ export default function BystanderEmergencyHUD() {
                     setParamedicPin(e.target.value);
                     setPinError('');
                   }}
-                  placeholder="Enter PIN (e.g. PARAMEDIC-108)"
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-sm font-mono text-center text-white focus:outline-none focus:border-amber-500"
+                  placeholder="PIN: PARAMEDIC-108"
+                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-xs font-mono text-center text-white focus:outline-none focus:border-teal-500"
                 />
                 {pinError && (
-                  <p className="text-xs text-red-400 mt-1.5 text-center font-medium">
+                  <p className="text-xs text-rose-400 mt-1.5 text-center font-medium">
                     {pinError}
                   </p>
                 )}
                 <p className="text-[10px] text-slate-500 text-center mt-2">
-                  Demo PIN: <strong className="text-slate-300">PARAMEDIC-108</strong>
+                  Demo Authorized PIN: <strong className="text-slate-300 font-mono">PARAMEDIC-108</strong>
                 </p>
               </div>
 
@@ -335,9 +443,9 @@ export default function BystanderEmergencyHUD() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold shadow-md"
+                  className="flex-1 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold shadow-xs cursor-pointer"
                 >
-                  Unlock Vault
+                  Access Triage Console
                 </button>
               </div>
             </form>

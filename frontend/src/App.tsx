@@ -15,7 +15,6 @@ import TagStudioView from './pages/TagStudioView';
 import BystanderEmergencyHUD from './pages/BystanderEmergencyHUD';
 import AmbulanceFieldTriage from './pages/AmbulanceFieldTriage';
 import HospitalCheckIn from './pages/HospitalCheckIn';
-import DemoControlBar from './components/DemoControlBar';
 
 const ProtectedDoctorRoute = ({ children }: { children: React.ReactNode }) => {
   // Direct access enabled for seamless hackathon live demonstration
@@ -74,9 +73,6 @@ function App() {
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/doctor" replace />} />
       </Routes>
-
-      {/* Floating Demo Control Bar pinned across all pages */}
-      <DemoControlBar />
     </BrowserRouter>
   );
 }

@@ -142,23 +142,23 @@ export default function OPDPrescriptionModal({
             )}
           </div>
 
-          {/* Primary Diagnosis & Standardized Morbidity (NAMASTE Portal & WHO ICD-11 TM2) */}
+          {/* Primary Diagnosis & Standardized Morbidity (WHO ICD-11) */}
           {(patient.primaryDiagnosis || patient.namasteCode) && (
-            <div className="mb-6 p-3.5 bg-emerald-50/70 border border-emerald-200/80 rounded-xl">
+            <div className="mb-6 p-3.5 bg-teal-50/70 border border-teal-200/80 rounded-xl">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] font-black tracking-wider uppercase text-emerald-800 flex items-center gap-1">
-                  <ShieldCheck size={12} className="text-emerald-600" />
-                  Clinical Diagnosis (NAMASTE / WHO ICD-11 TM2 Standardized)
+                <span className="text-[10px] font-black tracking-wider uppercase text-teal-800 flex items-center gap-1">
+                  <ShieldCheck size={12} className="text-teal-600" />
+                  Clinical Diagnosis (WHO ICD-11 Standardized)
                 </span>
-                <span className="text-[9px] font-bold text-emerald-700 bg-white px-2 py-0.5 rounded border border-emerald-200">
-                  Ayush Morbidity Code
+                <span className="text-[9px] font-bold text-teal-700 bg-white px-2 py-0.5 rounded border border-teal-200">
+                  ICD-11 Code
                 </span>
               </div>
               <div className="text-sm font-extrabold text-slate-900">
                 {patient.primaryDiagnosis || 'Provisional Diagnosis'}
               </div>
               {patient.namasteCode && (
-                <div className="mt-1 font-mono text-[11px] font-semibold text-emerald-900 bg-emerald-100/70 px-2.5 py-1 rounded-md inline-block border border-emerald-300/60">
+                <div className="mt-1 font-mono text-[11px] font-semibold text-teal-900 bg-teal-100/70 px-2.5 py-1 rounded-md inline-block border border-teal-300/60">
                   🏷️ {patient.namasteCode}
                 </div>
               )}
