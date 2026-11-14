@@ -1081,7 +1081,7 @@ export default function PatientDashboard() {
               }}
               className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-medium transition-all shadow-xs"
             >
-              {isScanning ? 'Verifying Reception QR...' : 'Simulate Scan Reception QR'}
+              {isScanning ? 'Verifying Reception QR...' : 'Scan Reception Kiosk QR'}
             </button>
           </div>
         </div>

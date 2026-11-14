@@ -102,7 +102,7 @@ export default function AmbulanceFieldTriage() {
   const [bpDiastolic, setBpDiastolic] = useState('');
   const [pulse, setPulse] = useState<number | ''>('');
   const [spO2, setSpO2] = useState<number | ''>('');
-  const [etaMinutes, setEtaMinutes] = useState(5);
+  const [etaMinutes, setEtaMinutes] = useState(4);
   const [selectedHospital, setSelectedHospital] = useState('HOSP-PGIMER');
 
   // Injury site selection (Starts empty)
@@ -126,19 +126,25 @@ export default function AmbulanceFieldTriage() {
     {
       id: 'HOSP-PGIMER',
       name: 'PGIMER Level-1 Apex Trauma Centre',
+      etaMinutes: 4,
       time: '4 mins',
+      distance: '2.4 km',
       capabilities: '24/7 Neuro ICU • Blood Bank Massive Transfusion Ready'
     },
     {
       id: 'HOSP-GMCH32',
       name: 'GMCH Sector 32 Emergency Bay',
+      etaMinutes: 8,
       time: '8 mins',
+      distance: '5.1 km',
       capabilities: 'Level-2 Trauma • On-call Orthopedic & General Surgery'
     },
     {
       id: 'HOSP-CIVIL',
       name: 'Sub-Divisional Civil Hospital',
+      etaMinutes: 3,
       time: '3 mins',
+      distance: '1.2 km',
       capabilities: 'Primary Stabilization Only (No CT on duty)'
     }
   ];
@@ -167,12 +173,6 @@ export default function AmbulanceFieldTriage() {
     };
   }, [isScanning]);
 
-  const handleSimulateTagScan = (tag: string) => {
-    setScannedTagId(tag);
-    setIsScanning(false);
-    setTriageStep('auth');
-  };
-
   const handleManualTagSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!manualTagInput.trim()) return;
@@ -195,31 +195,6 @@ export default function AmbulanceFieldTriage() {
       setAuthError('');
     } else {
       setAuthError('Access Denied. Enter valid paramedic passcode (e.g. 108 or PARAMEDIC-108).');
-    }
-  };
-
-  const applyClinicalPreset = (preset: 'shock' | 'tbi' | 'stable') => {
-    if (preset === 'shock') {
-      setGcs(7);
-      setBpSystolic('84');
-      setBpDiastolic('52');
-      setPulse(124);
-      setSpO2(88);
-      setSelectedInjuries(['Traumatic Brain Injury (TBI)', 'Compound Limb Fracture']);
-    } else if (preset === 'tbi') {
-      setGcs(9);
-      setBpSystolic('148');
-      setBpDiastolic('92');
-      setPulse(62);
-      setSpO2(94);
-      setSelectedInjuries(['Traumatic Brain Injury (TBI)', 'Cervical Spine Trauma']);
-    } else if (preset === 'stable') {
-      setGcs(15);
-      setBpSystolic('122');
-      setBpDiastolic('80');
-      setPulse(78);
-      setSpO2(99);
-      setSelectedInjuries(['Severe Friction Road Rash']);
     }
   };
 
@@ -382,7 +357,7 @@ export default function AmbulanceFieldTriage() {
               )}
             </div>
 
-            {/* Action Buttons: Camera Scan or Quick 1-Tap Preset */}
+            {/* Action Buttons: Camera Scan or Manual Tag Entry */}
             <div className="w-full max-w-sm flex flex-col gap-2.5">
               <button
                 type="button"
@@ -393,36 +368,20 @@ export default function AmbulanceFieldTriage() {
                 <span>{isScanning ? 'Close Live Camera' : 'Turn On Live Tablet Camera Scanner'}</span>
               </button>
 
-              <div className="flex items-center my-1">
-                <div className="flex-1 border-t border-slate-200" />
-                <span className="px-3 text-[10px] uppercase font-bold text-slate-400 font-mono">or 1-Tap Simulation</span>
-                <div className="flex-1 border-t border-slate-200" />
-              </div>
-
-              {/* 1-Tap Simulation button for hackathon judges */}
-              <button
-                type="button"
-                onClick={() => handleSimulateTagScan('PING-HLM-882')}
-                className="w-full py-3 px-4 rounded-lg bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer"
-              >
-                <QrCode size={16} />
-                <span>Scan Helmet Decal (Tag: PING-HLM-882 • CH-01-AB-1234)</span>
-              </button>
-
               {/* Manual Tag Entry */}
               <form onSubmit={handleManualTagSubmit} className="flex gap-2 mt-1">
                 <input
                   type="text"
                   value={manualTagInput}
                   onChange={(e) => setManualTagInput(e.target.value)}
-                  placeholder="Or enter Tag ID manually (e.g. CH-01-AB-1234)"
+                  placeholder="Or enter Tag ID manually (e.g. PING-HLM-882)"
                   className="flex-1 bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-xs font-mono text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-teal-600"
                 />
                 <button
                   type="submit"
-                  className="px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs border border-slate-300 cursor-pointer"
+                  className="px-3 py-2 rounded-lg bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow-2xs cursor-pointer"
                 >
-                  Confirm
+                  Verify Tag
                 </button>
               </form>
             </div>
@@ -719,36 +678,6 @@ export default function AmbulanceFieldTriage() {
             <div className="lg:col-span-7 flex flex-col gap-5">
               
               <form onSubmit={handleTransmitTelemetry} className="flex flex-col gap-5">
-                
-                {/* Quick Simulation Presets Toolbar */}
-                <div className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-xs flex flex-wrap items-center justify-between gap-2">
-                  <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
-                    <Sparkles size={13} className="text-amber-600" /> Rapid EMT Vitals Presets:
-                  </span>
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() => applyClinicalPreset('shock')}
-                      className="px-2.5 py-1 rounded bg-red-50 hover:bg-red-100 text-red-800 border border-red-200 text-[11px] font-bold cursor-pointer"
-                    >
-                      Severe Shock (BP 84/52)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => applyClinicalPreset('tbi')}
-                      className="px-2.5 py-1 rounded bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-[11px] font-bold cursor-pointer"
-                    >
-                      Head Trauma (GCS 9)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => applyClinicalPreset('stable')}
-                      className="px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-[11px] font-semibold cursor-pointer"
-                    >
-                      Conscious (GCS 15)
-                    </button>
-                  </div>
-                </div>
 
                 {/* Observed Trauma Injuries */}
                 <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
@@ -892,7 +821,10 @@ export default function AmbulanceFieldTriage() {
                       <button
                         type="button"
                         key={hosp.id}
-                        onClick={() => setSelectedHospital(hosp.id)}
+                        onClick={() => {
+                          setSelectedHospital(hosp.id);
+                          setEtaMinutes(hosp.etaMinutes);
+                        }}
                         className={`w-full p-3 rounded-xl border flex items-center justify-between text-left transition-all cursor-pointer ${
                           selectedHospital === hosp.id
                             ? 'border-teal-600 bg-teal-50/60 shadow-2xs'
@@ -900,32 +832,36 @@ export default function AmbulanceFieldTriage() {
                         }`}
                       >
                         <div>
-                          <span className="text-xs font-bold text-slate-900 block">{hosp.name}</span>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-xs font-bold text-slate-900 block">{hosp.name}</span>
+                            {selectedHospital === hosp.id && (
+                              <span className="text-[9px] font-bold text-teal-700 bg-teal-100 px-1.5 py-0.5 rounded">
+                                Target Bay
+                              </span>
+                            )}
+                          </div>
                           <span className="text-[10px] text-slate-500 block">{hosp.capabilities}</span>
                         </div>
-                        <span className="text-xs font-mono font-bold text-teal-800 bg-white px-2 py-1 rounded border border-slate-200">
-                          ETA {hosp.time}
-                        </span>
+                        <div className="text-right shrink-0 ml-3">
+                          <span className="text-xs font-mono font-bold text-teal-800 bg-white px-2.5 py-1 rounded border border-slate-200 block">
+                            ETA {hosp.time}
+                          </span>
+                          <span className="text-[10px] text-slate-400 font-mono block mt-0.5">
+                            {hosp.distance}
+                          </span>
+                        </div>
                       </button>
                     ))}
                   </div>
 
-                  {/* In-Transit ETA Slider */}
+                  {/* Synchronized Real-Time Route Status */}
                   <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
-                    <span className="text-xs text-slate-600 font-medium">Estimated Arrival Time (ETA):</span>
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="range"
-                        min="1"
-                        max="15"
-                        value={etaMinutes}
-                        onChange={(e) => setEtaMinutes(Number(e.target.value))}
-                        className="w-32 accent-teal-700"
-                      />
-                      <span className="text-sm font-black text-slate-900 font-mono w-14 text-right">
-                        {etaMinutes} min
-                      </span>
-                    </div>
+                    <span className="text-xs text-slate-600 font-semibold flex items-center gap-1.5">
+                      <Clock size={13} className="text-teal-700" /> Confirmed Ambulance ETA to Bay:
+                    </span>
+                    <span className="text-sm font-black text-teal-800 font-mono bg-teal-50 px-3 py-1 rounded-lg border border-teal-200">
+                      {etaMinutes} mins
+                    </span>
                   </div>
                 </div>
 

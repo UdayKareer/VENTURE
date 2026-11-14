@@ -246,12 +246,12 @@ export default function TagStudioView() {
                 className="w-full py-2 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold border border-slate-200 flex items-center justify-center gap-2 transition-colors cursor-pointer"
               >
                 <Radio size={14} className={nfcSimulated ? 'animate-ping text-amber-600' : 'text-slate-500'} />
-                {nfcSimulated ? 'NFC Handshake Connected! Opening HUD...' : 'Simulate 1-Tap Smartphone NFC Tap'}
+                {nfcSimulated ? 'NFC Handshake Connected! Opening HUD...' : 'Test NFC Chip Ingress (Bystander HUD)'}
               </button>
             </div>
 
             <p className="text-[11px] text-slate-500 text-center mt-4">
-              Judges can point any smartphone camera at this screen to open the live roadside Bystander HUD.
+              Point any smartphone camera at this QR code to open the live roadside Bystander HUD.
             </p>
           </div>
         </div>

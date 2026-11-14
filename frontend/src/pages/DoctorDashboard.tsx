@@ -320,79 +320,6 @@ export default function DoctorDashboard() {
     setTimeout(() => setStatusMessage(''), 4000);
   };
 
-  const applyExamPreset = (preset: 'normal' | 'pitta' | 'vata') => {
-    if (preset === 'normal') {
-      setExamDashavidha({
-        prakriti: 'Vata-Pitta Combination',
-        vikriti: 'Doshic Equilibrium (No acute morbidity)',
-        sara: 'Pravara Reserve (Robust tissue stamina & tone)',
-        samhanana: 'Compact & Robust (Samhanana Pravara)',
-        pramana: 'Proportionate & Symmetrical (Normal BMI)',
-        satmya: 'Sarva-rasa Satmya (High dietary & environmental adaptability)',
-        sattva: 'Pravara Sattva (High emotional fortitude & stress tolerance)',
-        aharaShakti: 'Samagni (Balanced appetite and digestion)',
-        vyayamaShakti: 'Pravara (High exertional stamina)',
-        vaya: `${selectedPatient.age || 'Adult'} Yrs - Madhyama Phase`
-      });
-      setExamAshtaSthana({
-        nadi: 'Normal Vata-Pitta Rhythm (72 bpm, regular)',
-        mutra: 'Clear Pale Yellow (Avishesha)',
-        mala: 'Normal Formed Daily (Sukha Pravritti)',
-        jihwa: 'Clean Pink & Moist (Nirama)',
-        shabda: 'Clear & Resonant (Spashta)',
-        sparsha: 'Normal Warm & Soft (Prakrita)',
-        druk: 'Clear Sclera & Lustrous',
-        akruti: 'Comfortable & Calm (Prakrita)'
-      });
-    } else if (preset === 'pitta') {
-      setExamDashavidha({
-        prakriti: 'Pitta-Vata Combination',
-        vikriti: 'Pitta Imbalance (Hyperacidity, Vidaha, Gastric distress)',
-        sara: 'Madhyama Reserve (Average tissue stamina)',
-        samhanana: 'Average Build (Balanced skeletal tone)',
-        pramana: 'Proportionate & Symmetrical',
-        satmya: 'Moderate Adaptability (Sensitive to spicy foods & heat)',
-        sattva: 'Madhyama Resilience (Moderate coping under stress)',
-        aharaShakti: 'Tikshnagni (Hyperacidic / Rapid hunger)',
-        vyayamaShakti: 'Moderate Endurance',
-        vaya: `${selectedPatient.age || 'Adult'} Yrs - Madhyama Phase`
-      });
-      setExamAshtaSthana({
-        nadi: 'Rapid & Bounding (Mandukagati, 78 bpm)',
-        mutra: 'Concentrated Dark Yellow / Burning',
-        mala: 'Constipated & Hard (Krura Koshtha)',
-        jihwa: 'Red Margins with Mild White Coating (Pitta-Sama)',
-        shabda: 'Clear & Resonant (Spashta)',
-        sparsha: 'Warm & Mildly Sweaty (Ushna)',
-        druk: 'Clear with Mild Scleral Injection',
-        akruti: 'Mild Pain Facies (Kastam)'
-      });
-    } else if (preset === 'vata') {
-      setExamDashavidha({
-        prakriti: 'Vata-Kapha Combination',
-        vikriti: 'Vata Imbalance (Musculoskeletal stiffness, Joint crepitus, Pain)',
-        sara: 'Avara Reserve (Depleted tissue tone)',
-        samhanana: 'Lean / Asthenic Build (Avara)',
-        pramana: 'Mildly Disproportionate (Thin extremities)',
-        satmya: 'Low Adaptability (Cold sensitive, Dry food intolerance)',
-        sattva: 'Madhyama Sattva (Anxiety prone under acute pain)',
-        aharaShakti: 'Vishamagni (Erratic appetite & bloating)',
-        vyayamaShakti: 'Avara (Tires rapidly on physical exertion)',
-        vaya: `${selectedPatient.age || 'Adult'} Yrs - Mature Phase`
-      });
-      setExamAshtaSthana({
-        nadi: 'Thin, Rapid & Feeble (Sarpagati, 82 bpm)',
-        mutra: 'Scanty Pale Yellow',
-        mala: 'Hard, Dry & Infrequent (Krura Koshtha)',
-        jihwa: 'Dry & Fissured (Ruksha-Jihwa)',
-        shabda: 'Low Volume / Feeble Phonation',
-        sparsha: 'Cold & Dry Extremities (Sheeta-Ruksha)',
-        druk: 'Sunken & Dry Conjunctiva',
-        akruti: 'Guarded Painful Posture (Shoola Facies)'
-      });
-    }
-  };
-
   const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
   const [queueFilter, setQueueFilter] = useState<'all' | 'normal' | 'emergency' | 'waiting' | 'relieved'>('all');
   const [sortBy, setSortBy] = useState<'longest_wait' | 'newest' | 'acuity'>('longest_wait');
@@ -3575,37 +3502,11 @@ export default function DoctorDashboard() {
                         <div>
                           <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-2">
                             <Stethoscope size={15} className="text-emerald-700" />
-                            <span>Bedside Physical Examination Entry (Charaka & Sushruta Standard Matrix)</span>
+                            <span>Bedside Physical Examination Matrix</span>
                           </h4>
                           <p className="text-[11px] text-slate-500">
-                            Perform physical examination and enter bedside findings below. Use 1-click clinical presets for fast OPD throughput.
+                            Perform physical examination and document bedside clinical findings below.
                           </p>
-                        </div>
-
-                        {/* Quick Presets */}
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Fast Presets:</span>
-                          <button
-                            type="button"
-                            onClick={() => applyExamPreset('normal')}
-                            className="px-2.5 py-1 bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-slate-700 rounded-lg text-[11px] font-bold transition-all shadow-2xs cursor-pointer"
-                          >
-                            🌿 Normal Baseline
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => applyExamPreset('pitta')}
-                            className="px-2.5 py-1 bg-white hover:bg-amber-50 border border-slate-200 hover:border-amber-300 text-slate-700 rounded-lg text-[11px] font-bold transition-all shadow-2xs cursor-pointer"
-                          >
-                            🔥 Pitta Flare (Acidity)
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => applyExamPreset('vata')}
-                            className="px-2.5 py-1 bg-white hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-slate-700 rounded-lg text-[11px] font-bold transition-all shadow-2xs cursor-pointer"
-                          >
-                            💨 Vata Flare (Stiffness)
-                          </button>
                         </div>
                       </div>
 
